@@ -1,0 +1,17 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: VNLaw
+test:
+  <<: *default
+  database: VNLaw_test
+
+production:
+  <<: *default
+  database: VNLaw_production
+  username: VNLaw
+  password: <%= ENV['VNLAW_DATABASE_PASSWORD'] %>
