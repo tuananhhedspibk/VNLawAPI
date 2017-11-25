@@ -4,6 +4,7 @@ class Api::V1::SearchesController < ApplicationController
   def index
     current_page = 1
     @articles_elastic = []
+    byebug
     if (@articles.class == Searchkick::Results)
       articlesCount = @articles.total_entries
       @articles.hits.each do |article|
@@ -12,8 +13,8 @@ class Api::V1::SearchesController < ApplicationController
     else
       articlesCount = @articles.count
     end
-    limit_page = (articlesCount) % 6 == 0 ?
-      (articlesCount / 6) : (articlesCount / 6 + 1) 
+    limit_page = (articlesCount) % 8 == 0 ?
+      (articlesCount / 8) : (articlesCount / 8 + 1) 
     if params[:page]
       if params[:page].to_i > limit_page
         current_page = limit_page
@@ -32,7 +33,7 @@ class Api::V1::SearchesController < ApplicationController
           number_articles: articlesCount,
           current_page: current_page,
           limit_page: limit_page,
-          articles: @articles_elastic[(current_page - 1) * 6, 6]
+          articles: @articles_elastic[(current_page - 1) * 8, 8]
             .as_json
         }, status: :ok
       else
@@ -40,7 +41,7 @@ class Api::V1::SearchesController < ApplicationController
           number_articles: articlesCount,
           current_page: current_page,
           limit_page: limit_page,
-          articles: @articles[(current_page - 1) * 6, 6]
+          articles: @articles[(current_page - 1) * 8, 8]
             .as_json(only: [:id, :title, :public_day,
               :effect_day, :effect_status])
         }, status: :ok
@@ -84,24 +85,24 @@ class Api::V1::SearchesController < ApplicationController
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
-          match: :phrase, order: {public_day: :desc}
+          order: {public_day: :desc}
       else
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
-          match: :phrase, order: {public_day: :asc}
+          order: {public_day: :asc}
       end
     else
       if params[:group2_2] == t("app.search_box.filter.filter_6")
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
-          match: :phrase, order: {effect_day: :desc}
+          order: {effect_day: :desc}
       else
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
-          match: :phrase, order: {effect_day: :asc}
+          order: {effect_day: :asc}
       end
     end
     return @articles

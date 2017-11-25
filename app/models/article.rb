@@ -33,10 +33,10 @@ class Article < ApplicationRecord
       analysis: {
         analyzer: {
           vnanalysis: {
-            tokenizer: "icu_tokenizer",
+            tokenizer: "vi_tokenizer",
+            char_filter:  [ "html_strip" ],
             filter: [
-              "icu_folding",
-              "icu_normalizer"
+              "icu_folding"
             ]
           }
         }
@@ -48,25 +48,15 @@ class Article < ApplicationRecord
           title: {
             type: "text",
             index: "true",
-            boost: 10
+            boost: 10,
+            analyzer: "vnanalysis"
           },
           content: {
             type: "text",
             index: "true",
-            boost: 10
+            boost: 10,
+            analyzer: "vnanalysis"
           },
-          index_html: {
-            type: "text",
-            index: "true"
-          },
-          full_html: {
-            type: "text",
-            index: "true"
-          },
-          public_day: {
-            type: "date",
-            index: "true"
-          }
         }
       }
     }

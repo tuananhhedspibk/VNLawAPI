@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20170808154601) do
     t.text "content"
     t.text "full_html"
     t.text "index_html"
-    t.text "numerical_symbol"
+    t.text "symbol_number"
     t.date "public_day"
     t.date "day_report"
     t.text "article_type"
@@ -47,53 +47,6 @@ ActiveRecord::Schema.define(version: 20170808154601) do
     t.text "chap_name"
   end
 
-  create_table "extract_modify", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.integer "type"
-    t.text "part_modify_name"
-    t.text "chap_modify_name"
-    t.text "sec_modify_name"
-    t.text "law_modify_name"
-    t.text "item_modify_name"
-    t.text "point_modify_name"
-    t.text "text_delete"
-    t.text "from_text"
-    t.text "to_text"
-    t.text "numerical_symbol"
-  end
-
-  create_table "header_doc", id: false, force: :cascade do |t|
-    t.text "doc_id"
-    t.text "header_text"
-  end
-
-  create_table "index_modify_position", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modified_law_id"
-    t.integer "part_modify_index"
-    t.integer "chap_modify_index"
-    t.integer "sec_modify_index"
-    t.integer "law_modify_index"
-    t.integer "item_modify_index"
-    t.integer "point_modify_index"
-    t.boolean "correct"
-  end
-
-  create_table "index_modify_positions", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modified_law_id"
-    t.integer "part_modify_index"
-    t.integer "chap_modify_index"
-    t.integer "sec_modify_index"
-    t.integer "law_modify_index"
-    t.integer "item_modify_index"
-    t.integer "point_modify_index"
-    t.boolean "correct"
-  end
-
   create_table "items", id: false, force: :cascade do |t|
     t.text "law_id"
     t.integer "part_index"
@@ -106,12 +59,6 @@ ActiveRecord::Schema.define(version: 20170808154601) do
     t.integer "item_end"
     t.text "item_name"
     t.text "item_content"
-    t.integer "title_end"
-  end
-
-  create_table "law_has_modification", id: false, force: :cascade do |t|
-    t.text "doc_id"
-    t.text "modyfied_doc_id"
   end
 
   create_table "laws", id: false, force: :cascade do |t|
@@ -125,13 +72,17 @@ ActiveRecord::Schema.define(version: 20170808154601) do
     t.integer "law_end"
     t.text "law_name"
     t.text "law_content"
-    t.integer "title_end"
   end
 
-  create_table "link_modify_articles", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modify_doc_id"
+  create_table "news", id: false, force: :cascade do |t|
+    t.text "id"
+    t.text "title"
+    t.text "url"
+    t.text "description"
+    t.text "content"
+    t.date "public_date"
+    t.date "created_at"
+    t.date "updated_at"
   end
 
   create_table "parts", id: false, force: :cascade do |t|
@@ -167,38 +118,6 @@ ActiveRecord::Schema.define(version: 20170808154601) do
     t.integer "sec_start"
     t.integer "sec_end"
     t.text "sec_name"
-  end
-
-  create_table "type_modify_law", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_0", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_1", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_2", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
   end
 
 end
