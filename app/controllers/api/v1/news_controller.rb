@@ -1,7 +1,5 @@
 class Api::V1::NewsController < ApplicationController
 	def index
-		#@news = New.paginate page: params[:page]
-		#####
 		render json: {
 			news: News.all.as_json(only: [:id, :public_date, :description]),
 			articles: Article.all.as_json(only: [:id, :title]) 
