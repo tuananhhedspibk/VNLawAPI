@@ -1,10 +1,9 @@
-class Api::V1::SearchesController < ApplicationController
+class Api::V1::SearchArticlesController < ApplicationController
   before_action :search_articles, only: :index
 
   def index
     current_page = 1
     @articles_elastic = []
-    byebug
     if (@articles.class == Searchkick::Results)
       articlesCount = @articles.total_entries
       @articles.hits.each do |article|
