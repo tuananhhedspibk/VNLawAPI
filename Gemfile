@@ -15,7 +15,8 @@ gem "will_paginate", "3.1.5"
 gem "bootstrap-will_paginate", "1.0.0"
 gem "i18n-js"
 gem "searchkick"
-gem 'rack-cors', :require => 'rack/cors'
+gem "rack-cors", :require => "rack/cors"
+gem "apipie-rails"
 
 group :development, :test do
   gem "byebug", platform: :mri

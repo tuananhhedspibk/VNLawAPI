@@ -18,8 +18,6 @@ class Article < ApplicationRecord
     through: :reverse_relationshipmodifies,
     source: :law_id
 
-  self.per_page = 15
-
   def isLawModify?
     relationshipmodifies.present?
   end
