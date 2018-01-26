@@ -143,11 +143,29 @@ class Api::V1::SearchLawyersController < ApplicationController
   end
 
   def search_lawyers
+    order_by = ""
+    if params[:sort_by] && params[:sort_by].length > 0
+      if params[:sort_by].to_s == t("app.attorney.sort_by_rate")
+        order_by = "rate".to_sym
+      elsif params[:sort_by].to_s == t("app.attorney.sort_by_cost")
+        order_by = "cost".to_sym
+      end
+    end
     if params[:query] && params[:query].length > 0
-      @lawyers = Lawyer.search params[:query], fields: [:name],
-        suggest: true, order: {rate: :desc}, match: :phrase
+      if params[:sort_by] && params[:sort_by].length > 0
+        @lawyers = Lawyer.search params[:query], fields: [:name],
+          suggest: true, order: {order_by => :desc}, match: :phrase
+      else
+        @lawyers = Lawyer.search params[:query], fields: [:name],
+          suggest: true, order: {rate: :desc}, match: :phrase
+      end
     else
-      @lawyers = Lawyer.includes(:specializations).all
+      if params[:sort_by] && params[:sort_by].length > 0
+        @lawyers = Lawyer.includes(:specializations).all.order(
+          order_by => :desc)
+      else
+        @lawyers = Lawyer.includes(:specializations).all.order(rate: :desc)
+      end
     end
   end
 end

@@ -79,8 +79,8 @@ class Api::V1::SearchArticlesController < ApplicationController
   end
 
   def search_match_phrase
-    if params[:group2_1] == t("app.search_box.filter.filter_4")
-      if params[:group2_2] == t("app.search_box.filter.filter_6")
+    if params[:group2_1] == t("app.search_box.filter.filter_3")
+      if params[:group2_2] == t("app.search_box.filter.filter_4")
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
@@ -92,7 +92,7 @@ class Api::V1::SearchArticlesController < ApplicationController
           order: {public_day: :asc}
       end
     else
-      if params[:group2_2] == t("app.search_box.filter.filter_6")
+      if params[:group2_2] == t("app.search_box.filter.filter_4")
         @articles = Article.search params[:query],
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
@@ -108,8 +108,8 @@ class Api::V1::SearchArticlesController < ApplicationController
   end
 
   def search_match_word
-    if params[:group2_1] == t("app.search_box.filter.filter_4")
-      if params[:group2_2] == t("app.search_box.filter.filter_6")
+    if params[:group2_1] == t("app.search_box.filter.filter_3")
+      if params[:group2_2] == t("app.search_box.filter.filter_4")
         @articles = Article.search params[:query], operator: "or",
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
@@ -121,7 +121,7 @@ class Api::V1::SearchArticlesController < ApplicationController
           match: :word, order: {public_day: :asc}, operator: "or"
       end
     else
-      if params[:group2_2] == t("app.search_box.filter.filter_6")
+      if params[:group2_2] == t("app.search_box.filter.filter_4")
         @articles = Article.search params[:query], operator: "or",
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],

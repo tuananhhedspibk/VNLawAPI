@@ -1,49 +1,14 @@
 en:
   app:
-    chat_face: "Chat with us"
-    navbar:
-      app_name: "VNLaw"
-      home: "Home"
-      about: "About"
-      settings: "Settings"
-      sign_out: "Sing Out"
-    jumbotron:
-      introduce: "Introduce"
-      center_law: "Center laws"
-      news_law: "Law news"
     search_box:
-      title: "Search"
-      search_in: "Search in"
-      key_search: "Key search"
-      search: "Search"
       filter:
         filter_1: "Exact phrase above"
         filter_2: "There are all above"
-        filter_3: "Order by"
-        filter_4: "Public day"
-        filter_5: "Effective day"
-        filter_6: "New to old"
-        filter_7: "Old to new"
-    result_box:
-      new_text: "New Law"
-      text_effect_in_month: "Text effective in the month"
-      text_expires_in_month: "Text expires in the month"
-      searched: "Searched"
-      result: "result(s)"
-    text_much_view: "Text much view"
-    pdf_ver: "PDF version"
-    link_text: "Link Text"
-    attribute: "Attributes"
-    chart: "Chart"
-    download: "Download"
-    public: "Public"
-    effect: "Effect"
-    status:
-      title: "Status"
-    box_text:
-      new_law: "New laws"
-      leg_sit: "Legal situation"
-    index: "Index"
+        filter_3: "Public day"
+        filter_4: "New to old"
+    attorney:
+      sort_by_rate: "rate"
+      sort_by_cost: "cost"
     category_box:
       category_organ:
         title: "Category Organization"

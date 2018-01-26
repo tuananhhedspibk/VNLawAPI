@@ -1,49 +1,14 @@
 vn:
   app:
-    chat_face: "Chat với chúng tôi"
-    navbar:
-      app_name: "Luật VN"
-      home: "Trang chủ"
-      about: "Thông tin"
-      settings: "Thiết lập"
-      sign_out: "Đăng xuất"
-    jumbotron:
-      introduce: "Giới thiệu"
-      center_law: "Văn bản pháp luật trung ương"
-      news_law: "Tin tức pháp luật"
     search_box:
-      title: "Tìm kiếm"
-      search_in: "Tìm trong"
-      key_search: "Từ khóa tìm kiếm"
-      search: "Tìm kiếm"
       filter:
         filter_1: "Chính xác cụm từ trên"
         filter_2: "Có tất cả từ trên"
-        filter_3: "Sắp xếp theo"
-        filter_4: "Ngày ban hành"
-        filter_5: "Ngày hiệu lực"
-        filter_6: "Mới đến cũ"
-        filter_7: "Cũ đến mới"
-    result_box:
-      new_text: "Văn bản mới"
-      text_effect_in_month: "Văn bản có hiệu lực trong tháng"
-      text_expires_in_month: "Văn bản hết hiệu lực trong tháng"
-      searched: "Tìm thấy"
-      result: "kết quả"
-    text_much_view: "Văn bản được xem nhiều"
-    pdf_ver: "Bản PDF"
-    link_text: "Văn bản liên quan"
-    attribute: "Thuộc tính"
-    chart: "Biểu đồ"
-    download: "Tải về"
-    public: "Ban hành"
-    effect: "Hiệu lực"
-    status:
-      title: "Trạng thái"
-    box_text:
-      new_law: "Văn bản mới"
-      leg_sit: "Tình huống pháp luật"
-    index: "Mục lục"
+        filter_3: "Ngày ban hành"
+        filter_4: "Mới đến cũ"
+    attorney:
+      sort_by_rate: "Xếp hạng"
+      sort_by_cost: "Phí tư vấn"
     category_box:
       category_organ:
         title: "Cơ quan ban hành"

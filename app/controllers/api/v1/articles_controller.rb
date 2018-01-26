@@ -305,5 +305,4 @@ class Api::V1::ArticlesController < ApplicationController
     return position = "#{part_index}_#{chap_index}_
       #{sec_index}_#{law_index}_#{item_index}_#{point_index}"
   end
-
 end
