@@ -26,6 +26,9 @@ class Article < ApplicationRecord
     reverse_relationshipmodifies.present?
   end
 
+  has_many :neighbors, through: :article_neighbor,
+    source: :neighbor
+
   searchkick batch_size: 200, merge_mappings: true,
     settings: {
       analysis: {

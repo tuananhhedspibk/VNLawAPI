@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         get "/search/lawyers", to: "search_lawyers#index"
         get "/lawyers/top", to: "search_lawyers#top_lawyers"
         get "/lawyers/names", to: "search_lawyers#index_names"
+        get "/lawyers", to: "lawyers#index"
         resources :articles, only: [:show, :index]
         resources :news, only: [:show, :index]
     end
