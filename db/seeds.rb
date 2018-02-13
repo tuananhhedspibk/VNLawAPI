@@ -25,6 +25,22 @@ costs_list = [200000, 300000, 500000, 600000, 100000, 550000]
 
 rates_list = [4.5, 5, 5, 3.5, 2.5, 5, 3, 2.5, 5]
 
+fb_ids_list = ["osEJmYiLmXQFq2ncCFz8Xr5qe5n1", "ppBZofn8AwTY1gTj92bfQegyBlw1",
+"0K0a7kCxqhSfKN5iJ1oNiLShqSt1", "azXW5C600ESBl8ooAFneBt1hFhw2",
+"3FI0yqkR6XTLICjzOCeFu7R2gDj1", "0lwAtZAVwfgWkTarcWVraUWybjC2",
+"0K0a7kCxqhSfKN5iJ1oNiLShqSt2", "0K0a7kCxqhSfKN5iJ1oNiLShqSt5",
+"0K0a7kCxqhSfKN5iJ1oNiLShqSt8"]
+
+photo_urls_list = [
+"https://lh4.googleusercontent.com/-9SCptAuM9Mo/AAAAAAAAAAI/AAAAAAAAAEM/hTRuSqgZwbs/photo.jpg",
+"https://image.ibb.co/i23jUF/default_ava.png", "https://image.ibb.co/i23jUF/default_ava.png",
+"http://cafef.vcmedia.vn/zoom/660_360/2015/truong-thanh-duc-1423034408715.png",
+"https://image.ibb.co/i23jUF/default_ava.png",
+"https://firebasestorage.googleapis.com/v0/b/lkbc-chat.appspot.com/o/avatar%2F0lwAtZAVwfgWkTarcWVraUWybjC2?alt=media&token=4a8b1ea5-0178-44dd-8db1-482beb81f7c7",
+"https://image.ibb.co/i23jUF/default_ava.png",
+"https://image.ibb.co/i23jUF/default_ava.png",
+"https://image.ibb.co/i23jUF/default_ava.png"]
+
 random = Random.new
 
 for i in (0..8) do
@@ -33,7 +49,9 @@ for i in (0..8) do
     rate: rates_list[i],
     intro: intro_template,
     cost: costs_list[i],
-    view_count: 0
+    view_count: 0,
+    photo_url: photo_urls_list[i],
+    fb_id: fb_ids_list[i]
   )
 end
 
@@ -51,24 +69,3 @@ for i in (1..9) do
     )
   end
 end
-
-#update lawyers set fb_id = 'osEJmYiLmXQFq2ncCFz8Xr5qe5n1' where id = 1;
-#update lawyers set fb_id = 'ppBZofn8AwTY1gTj92bfQegyBlw1' where id = 2;
-#update lawyers set fb_id = '0K0a7kCxqhSfKN5iJ1oNiLShqSt1' where id = 3;
-#update lawyers set fb_id = 'azXW5C600ESBl8ooAFneBt1hFhw2' where id = 4;
-#update lawyers set fb_id = '3FI0yqkR6XTLICjzOCeFu7R2gDj1' where id = 5;
-#update lawyers set fb_id = '0lwAtZAVwfgWkTarcWVraUWybjC2' where id = 6;
-#update lawyers set fb_id = '0K0a7kCxqhSfKN5iJ1oNiLShqSt2' where id = 7;
-#update lawyers set fb_id = '0K0a7kCxqhSfKN5iJ1oNiLShqSt5' where id = 8;
-#update lawyers set fb_id = '0K0a7kCxqhSfKN5iJ1oNiLShqSt8' where id = 9;
-
-
-# update lawyers set photo_url = 'https://firebasestorage.googleapis.com/v0/b/lkbc-chat.appspot.com/o/avatar%2F0lwAtZAVwfgWkTarcWVraUWybjC2?alt=media&token=4a8b1ea5-0178-44dd-8db1-482beb81f7c7' where id = 6;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 3;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 5;
-# update lawyers set photo_url = 'http://cafef.vcmedia.vn/zoom/660_360/2015/truong-thanh-duc-1423034408715.png' where id = 4;
-# update lawyers set photo_url = 'https://lh4.googleusercontent.com/-9SCptAuM9Mo/AAAAAAAAAAI/AAAAAAAAAEM/hTRuSqgZwbs/photo.jpg' where id = 1;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 2;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 7;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 8;
-# update lawyers set photo_url = 'https://image.ibb.co/i23jUF/default_ava.png' where id = 9;

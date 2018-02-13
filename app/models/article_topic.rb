@@ -1,0 +1,2 @@
+class ArticleTopic < ApplicationRecord
+end
