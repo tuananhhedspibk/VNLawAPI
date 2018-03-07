@@ -255,8 +255,8 @@ class Api::V1::ArticlesController < ApplicationController
     if find != nil
       html_insert = '<a id="' + position + '"></a>'
       @full_html = @full_html[0,@start_index+find.begin(0)]
-        + html_insert + @full_html[@start_index
-        + find.begin(0),@full_html.length]
+        + html_insert + @full_html[@start_index + find.begin(0),
+        @full_html.length]
       @start_index = find.begin(0)
       if style == true
         @index_html +=  '<div class="' + type + '">

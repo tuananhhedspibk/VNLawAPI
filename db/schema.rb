@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180212151527) do
+ActiveRecord::Schema.define(version: 20180305154945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,15 +26,21 @@ ActiveRecord::Schema.define(version: 20180212151527) do
     t.index ["source_id"], name: "index_article_neighbors_on_source_id"
   end
 
-  create_table "articles", force: :cascade do |t|
-    t.string "article_id"
+  create_table "article_topics", force: :cascade do |t|
+    t.bigint "article_id"
+    t.text "topics"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["article_id"], name: "index_article_topics_on_article_id"
   end
 
-  create_table "articles_topics", force: :cascade do |t|
-    t.integer "article_id"
-    t.text "topics"
+  create_table "articles", force: :cascade do |t|
+    t.string "article_id"
+    t.text "content"
+    t.text "title"
+    t.datetime "public_day"
+    t.datetime "effect_day"
+    t.string "effect_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -66,6 +72,7 @@ ActiveRecord::Schema.define(version: 20180212151527) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "article_topics", "articles"
   add_foreign_key "lawyer_specializes", "lawyers"
   add_foreign_key "lawyer_specializes", "specializations"
 end
