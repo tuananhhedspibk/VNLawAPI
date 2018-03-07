@@ -1,30 +1,30 @@
 class Article < ApplicationRecord
-  has_many :parts, class_name: 'Part',
-    foreign_key: 'law_id'
+  # has_many :parts, class_name: 'Part',
+  #   foreign_key: 'law_id'
 
-  has_many :relationshipmodifies,
-    foreign_key: "law_id",
-    class_name: "Index_modify_position"
+  # has_many :relationshipmodifies,
+  #   foreign_key: "law_id",
+  #   class_name: "Index_modify_position"
 
-  has_many :modified_law,
-    through: :relationships,
-    source: :modified_law_id
+  # has_many :modified_law,
+  #   through: :relationships,
+  #   source: :modified_law_id
 
-  has_many :reverse_relationshipmodifies,
-    foreign_key: "modified_law_id",
-    class_name: "Index_modify_position"
+  # has_many :reverse_relationshipmodifies,
+  #   foreign_key: "modified_law_id",
+  #   class_name: "Index_modify_position"
 
-  has_many :law_modify,
-    through: :reverse_relationshipmodifies,
-    source: :law_id
+  # has_many :law_modify,
+  #   through: :reverse_relationshipmodifies,
+  #   source: :law_id
 
-  def isLawModify?
-    relationshipmodifies.present?
-  end
+  # def isLawModify?
+  #   relationshipmodifies.present?
+  # end
 
-  def isModifedLaw?
-    reverse_relationshipmodifies.present?
-  end
+  # def isModifedLaw?
+  #   reverse_relationshipmodifies.present?
+  # end
 
   has_many :neighbors, through: :article_neighbor,
     source: :neighbor
@@ -49,28 +49,18 @@ class Article < ApplicationRecord
           title: {
             type: "text",
             index: "true",
-            boost: 10,
-            analyzer: "vnanalysis"
+            boost: 10
           },
           content: {
             type: "text",
             index: "true",
-            boost: 10,
-            analyzer: "vnanalysis"
+            boost: 10
           },
         }
       }
     }
 
   class << self
-    def search_article_much_view
-      Article.order(count_click: :desc).limit(5)
-    end
-
-    def search_article_newest
-      Article.order(public_day: :desc).limit(4)
-    end
-
     def filter_by_type opts = {}
       article_type = opts[:article_type]
       if article_type != nil

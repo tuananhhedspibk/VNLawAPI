@@ -55,50 +55,44 @@ class Api::V1::SearchArticlesController < ApplicationController
   private
 
   def search_articles
+    query = "*"
     if params[:query] && params[:query].length > 0
-      if params[:group1] &&
-        params[:group1].length > 0
-        if params[:group1] == t("app.search_box.filter.filter_1")
-          @articles = search_match_phrase
-        elsif params[:group1] == t("app.search_box.filter.filter_2")
-          @articles = search_match_word
-        end
-      else
-        @articles = search_match_phrase
-      end
+      query = params[:query]
+    end
+
+    if params[:group1] == t("app.search_box.filter.filter_1")
+      @articles = search_match_phrase query
+    elsif params[:group1] == t("app.search_box.filter.filter_2")
+      @articles = search_match_word query
     else
-      if params[:article_type]
-        @articles = filter_by_article_type
-      elsif params[:agency_issued]
-      elsif params[:from_year] and params[:to_year]
-        @articles = filter_by_year_issued
-      else
-        @articles = Article.all
-      end
+      @articles = Article.search query,
+        select: [:id, :title, :public_day,
+          :effect_day, :effect_status],
+        order: {public_day: :desc}
     end
   end
-
-  def search_match_phrase
+    
+  def search_match_phrase query
     if params[:group2_1] == t("app.search_box.filter.filter_3")
       if params[:group2_2] == t("app.search_box.filter.filter_4")
-        @articles = Article.search params[:query],
+        @articles = Article.search query,
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           order: {public_day: :desc}
       else
-        @articles = Article.search params[:query],
+        @articles = Article.search query,
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           order: {public_day: :asc}
       end
     else
       if params[:group2_2] == t("app.search_box.filter.filter_4")
-        @articles = Article.search params[:query],
+        @articles = Article.search query,
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           order: {effect_day: :desc}
       else
-        @articles = Article.search params[:query],
+        @articles = Article.search query,
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           order: {effect_day: :asc}
@@ -107,45 +101,32 @@ class Api::V1::SearchArticlesController < ApplicationController
     return @articles
   end
 
-  def search_match_word
+  def search_match_word query
     if params[:group2_1] == t("app.search_box.filter.filter_3")
       if params[:group2_2] == t("app.search_box.filter.filter_4")
-        @articles = Article.search params[:query], operator: "or",
+        @articles = Article.search query, operator: "or",
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           match: :word, order: {public_day: :desc}
       else
-        @articles = Article.search params[:query],
+        @articles = Article.search query,
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           match: :word, order: {public_day: :asc}, operator: "or"
       end
     else
       if params[:group2_2] == t("app.search_box.filter.filter_4")
-        @articles = Article.search params[:query], operator: "or",
+        @articles = Article.search query, operator: "or",
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           match: :word, order: {effect_day: :desc}
       else
-        @articles = Article.search params[:query], operator: "or",
+        @articles = Article.search query, operator: "or",
           select: [:id, :title, :public_day,
             :effect_day, :effect_status],
           match: :word, order: {effect_day: :asc}
       end
     end
     return @articles
-  end
-
-  def filter_by_article_type
-    @articles = Article.search where: {article_type: params[:article_type]}
-  end
-
-  def filter_by_year_issued
-    from_year = Time.parse params[:from_year] + '-1-1'
-    to_year = Time.parse params[:to_year] + '-12-31'
-    date_range = {}
-    date_range[:gte] = from_year
-    date_range[:lte] =to_year
-    @articles = Article.search where: {public_day: date_range}
   end
 end

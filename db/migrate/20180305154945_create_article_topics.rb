@@ -1,4 +1,4 @@
-class CreateArticlesTopics < ActiveRecord::Migration[5.1]
+class CreateArticleTopics < ActiveRecord::Migration[5.1]
   def change
     create_table :article_topics do |t|
       t.references :article, foreign_key: true

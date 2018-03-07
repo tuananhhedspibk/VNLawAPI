@@ -40,9 +40,8 @@ class Api::V1::SearchLawyersController < ApplicationController
             limit_page: limit_page,
             suggest: false,
             lawyers: @lawyers_elastic[(current_page - 1) * 6, 6]
-              .as_json(include: :specializations),
-            status: :ok
-          }
+              .as_json(include: :specializations)
+          }, status: :ok
         else
           render json: {
             number_lawyers: lawyersCount,
@@ -50,15 +49,12 @@ class Api::V1::SearchLawyersController < ApplicationController
             limit_page: limit_page,
             suggest: false,
             lawyers: lawyers[(current_page - 1) * 6, 6]
-              .as_json(include: :specializations),
-            status: :ok
-          }
+              .as_json(include: :specializations)
+          }, status: :ok
         end
       else
         render json: {
-          lawyers: null,
-          status: :not_found
-        }
+        }, status: :not_found
       end
     else
       if lawyers.class == Searchkick::Results
@@ -81,20 +77,15 @@ class Api::V1::SearchLawyersController < ApplicationController
             render json: {
               number_lawyers: 0,
               suggest: true,
-              suggest_name: @lawyers_suggest[0].name,
-              status: :ok
-            }
+              suggest_name: @lawyers_suggest[0].name
+            }, status: :ok
           else
             render json: {
-              suggest_name: null,
-              status: :not_found
-            }
+            }, status: :not_found
           end
         else
           render json: {
-            suggest_name: :null,
-            status: :not_found
-          }
+          }, status: :not_found
         end
       end
     end
@@ -104,14 +95,11 @@ class Api::V1::SearchLawyersController < ApplicationController
     @names = Lawyer.select(:name).all
     if @names
       render json: {
-        names: @names,
-        status: :ok
-      }
+        names: @names
+      }, status: :ok
     else
       render json: {
-        names: null,
-        status: :not_found
-      }
+      }, status: :not_found
     end
   end
 
@@ -119,14 +107,11 @@ class Api::V1::SearchLawyersController < ApplicationController
     @top_lawyers = Lawyer.order(rate: :desc).limit(3)
     if @top_lawyers
       render json: {
-        top_lawyers: @top_lawyers,
-        status: :ok
-      }
+        top_lawyers: @top_lawyers
+      }, status: :ok
     else
       render json: {
-        top_lawyers: null,
-        status: :not_found
-      }
+      }, status: :not_found
     end
   end
 
@@ -168,12 +153,12 @@ class Api::V1::SearchLawyersController < ApplicationController
         order_by = "cost".to_sym
       end
     end
-    if params[:query] && params[:query].length > 0
+    if params[:name] && params[:name].length > 0
       if params[:sort_by] && params[:sort_by].length > 0
-        @lawyers = Lawyer.search params[:query], fields: [:name],
+        @lawyers = Lawyer.search params[:name], fields: [:name],
           suggest: true, order: {order_by => :desc}, match: :phrase
       else
-        @lawyers = Lawyer.search params[:query], fields: [:name],
+        @lawyers = Lawyer.search params[:name], fields: [:name],
           suggest: true, order: {rate: :desc}, match: :phrase
       end
     else

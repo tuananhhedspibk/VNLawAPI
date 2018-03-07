@@ -4,8 +4,8 @@ vn:
       filter:
         filter_1: "Chính xác cụm từ trên"
         filter_2: "Có tất cả từ trên"
-        filter_3: "Ngày ban hành"
-        filter_4: "Mới đến cũ"
+        filter_3: "Ngày phát hành"
+        filter_4: "Mới tới cũ"
     attorney:
       sort_by_rate: "Xếp hạng"
       sort_by_cost: "Phí tư vấn"
