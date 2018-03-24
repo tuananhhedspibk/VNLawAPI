@@ -69,26 +69,32 @@ for i in (1..9) do
     )
   end
 end
-
+# Article.all.each do |a|
+#   status = a.effect_status.split(":")[1]
+#   if status
+#     status = status.strip
+#     a.update_attributes(effect_status: status)
+#   end
+# end
 # Get current directory 
-File.dirname(__FILE__)
+# File.dirname(__FILE__)
 
-# Join it with relative path to the root
-File.join(File.dirname(__FILE__), '../')
+# # Join it with relative path to the root
+# File.join(File.dirname(__FILE__), '../')
 
-data = File.open("db/articles.tsv").read
-data.each_line do |article|
-  article = article.split("\t")
-  effect_status = article[5].split(":")[1]
-  effect_status = effect_status.strip()
-  Article.create!(
-    article_id: article[0],
-    content: article[1],
-    title: article[2],
-    public_day: DateTime.parse(article[3]),
-    effect_day: DateTime.parse(article[4]),
-    effect_status: effect_status,
-    created_at: article[6],
-    updated_at: article[7]
-  )
-end
+# data = File.open("db/articles.tsv").read
+# data.each_line do |article|
+#   article = article.split("\t")
+#   effect_status = article[5].split(":")[1]
+#   effect_status = effect_status.strip()
+#   Article.create!(
+#     article_id: article[0],
+#     content: article[1],
+#     title: article[2],
+#     public_day: DateTime.parse(article[3]),
+#     effect_day: DateTime.parse(article[4]),
+#     effect_status: effect_status,
+#     created_at: article[6],
+#     updated_at: article[7]
+#   )
+# end

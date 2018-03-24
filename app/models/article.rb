@@ -1,30 +1,29 @@
 class Article < ApplicationRecord
-  # has_many :parts, class_name: 'Part',
-  #   foreign_key: 'law_id'
+  has_many :parts, class_name: 'Part',
+    foreign_key: 'law_id'
 
-  # has_many :relationshipmodifies,
-  #   foreign_key: "law_id",
-  #   class_name: "Index_modify_position"
+  has_many :relationshipmodifies,
+    foreign_key: "law_id",
+    class_name: "Index_modify_position"
 
-  # has_many :modified_law,
-  #   through: :relationships,
-  #   source: :modified_law_id
+  has_many :modified_law,
+    through: :relationships,
+    source: :modified_law_id
 
-  # has_many :reverse_relationshipmodifies,
-  #   foreign_key: "modified_law_id",
-  #   class_name: "Index_modify_position"
+  has_many :reverse_relationshipmodifies,
+    foreign_key: "modified_law_id",
+    class_name: "Index_modify_position"
 
-  # has_many :law_modify,
-  #   through: :reverse_relationshipmodifies,
-  #   source: :law_id
+  has_many :law_modify,
+    through: :reverse_relationshipmodifies, source: :law_id
 
-  # def isLawModify?
-  #   relationshipmodifies.present?
-  # end
+  def isLawModify?
+    relationshipmodifies.present?
+  end
 
-  # def isModifedLaw?
-  #   reverse_relationshipmodifies.present?
-  # end
+  def isModifedLaw?
+    reverse_relationshipmodifies.present?
+  end
 
   has_many :neighbors, through: :article_neighbor,
     source: :neighbor
@@ -56,6 +55,18 @@ class Article < ApplicationRecord
             index: "true",
             boost: 10
           },
+          index_html: {
+            type: "text",
+            index: "true"
+          },
+          full_html: {
+            type: "text",
+            index: "true"
+          },
+          public_day: {
+            type: "date",
+            index: "true"
+          }
         }
       }
     }
