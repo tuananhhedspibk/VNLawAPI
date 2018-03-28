@@ -1,4 +1,6 @@
-class Api::V1::SearchLawyersController < ApplicationController
+class Api::V1::SearchLawyersController < Api::V1::ApplicationController
+  skip_before_action :authenticate_user_from_token!
+
   before_action :search_lawyers, only: :index
 
   attr_reader :lawyers

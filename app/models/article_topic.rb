@@ -1,2 +1,0 @@
-class ArticleTopic < ApplicationRecord
-end

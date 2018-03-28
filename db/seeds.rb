@@ -1,19 +1,7 @@
-intro_template = <<EOF
-Lorem Ipsum chỉ đơn giản là một đoạn văn bản giả,
-được dùng vào việc trình bày và dàn trang phục vụ cho in ấn.
-Lorem Ipsum đã được sử dụng như một văn bản chuẩn cho ngành
-công nghiệp in ấn từ những năm 1500, khi một họa sĩ vô danh
-ghép nhiều đoạn văn bản với nhau để tạo thành một bản mẫu văn bản.
-Đoạn văn bản này không những đã tồn tại năm thế kỉ,
-mà khi được áp dụng vào tin học văn phòng,
-nội dung của nó vẫn không hề bị thay đổi.
-EOF
+Role.create! name: "User"
+Role.create! name: "Lawyer"
 
-names_list = [
-  "Nguyễn Tiến Trường", "Trần Tuấn Anh",
-  "Trần Mạnh Linh", "Nguyễn Nhật Tân", "Doãn Minh Phúc",
-  "Park Hang Seo", "Alexis Sanchez", "Chú Tư", "Pham Gia"
-]
+random = Random.new
 
 specializations_list = [
   "Hình sự", "Sở hữu trí tuệ", "Hôn nhân & gia đình",
@@ -21,74 +9,145 @@ specializations_list = [
   "Dân sự", "Lao động - Bảo hiểm xã hội", "Doanh nghiệp"
 ]
 
-costs_list = [200000, 300000, 500000, 600000, 100000, 550000]
-
-rates_list = [4.5, 5, 5, 3.5, 2.5, 5, 3, 2.5, 5]
-
-fb_ids_list = ["osEJmYiLmXQFq2ncCFz8Xr5qe5n1", "ppBZofn8AwTY1gTj92bfQegyBlw1",
-"0K0a7kCxqhSfKN5iJ1oNiLShqSt1", "azXW5C600ESBl8ooAFneBt1hFhw2",
-"3FI0yqkR6XTLICjzOCeFu7R2gDj1", "0lwAtZAVwfgWkTarcWVraUWybjC2",
-"0K0a7kCxqhSfKN5iJ1oNiLShqSt2", "0K0a7kCxqhSfKN5iJ1oNiLShqSt5",
-"0K0a7kCxqhSfKN5iJ1oNiLShqSt8"]
-
-photo_urls_list = [
-"https://lh4.googleusercontent.com/-9SCptAuM9Mo/AAAAAAAAAAI/AAAAAAAAAEM/hTRuSqgZwbs/photo.jpg",
-"https://image.ibb.co/i23jUF/default_ava.png", "https://image.ibb.co/i23jUF/default_ava.png",
-"http://cafef.vcmedia.vn/zoom/660_360/2015/truong-thanh-duc-1423034408715.png",
-"https://image.ibb.co/i23jUF/default_ava.png",
-"https://firebasestorage.googleapis.com/v0/b/lkbc-chat.appspot.com/o/avatar%2F0lwAtZAVwfgWkTarcWVraUWybjC2?alt=media&token=4a8b1ea5-0178-44dd-8db1-482beb81f7c7",
-"https://image.ibb.co/i23jUF/default_ava.png",
-"https://image.ibb.co/i23jUF/default_ava.png",
-"https://image.ibb.co/i23jUF/default_ava.png"]
-
-random = Random.new
-
-for i in (0..8) do
-  Lawyer.create!(
-    name: names_list[i],
-    rate: rates_list[i],
-    intro: intro_template,
-    cost: costs_list[i],
-    view_count: 0,
-    photo_url: photo_urls_list[i],
-    fb_id: fb_ids_list[i]
-  )
-end
-
 for i in (0..7) do
   Specialization.create!(
     name: specializations_list[i]
   )
 end
 
-for i in (1..9) do
+api_key = "b1c7f840acdee887f402236e82736eba"
+api_hash_val = Digest::SHA256.hexdigest "b1c7f840acdee887f402236e82736eba"
+
+ApiKey.create! access_token: api_hash_val
+
+user_ids = [
+  "0K0a7kCxqhSfKN5iJ1oNiLShqSt1",
+  "0RQBhsa2JsMWZovGyjn75VWYa9n1",
+  "0lwAtZAVwfgWkTarcWVraUWybjC2",
+  "3FI0yqkR6XTLICjzOCeFu7R2gDj1",
+  "4kZrOPnlFHcBGqDx89AunPHg9EQ2",
+  "Alz8dRGl23gZASPdeSLsqSxBF1k1",
+  "mVNbOUT0HNeJRxhHzrs0nA9dOqI3"]
+
+user_names = [
+  "testnotifi.1511420786026",
+  "light.1516676291611",
+  "name.1510115243847",
+  "testchat.1511111570013",
+  "truong.1508822781704",
+  "linhtm.1509005103447",
+  "nhatan.1508821523027"
+]
+
+user_emails = [
+  "testnotifi@gmail.com",
+  "light@gmail.com",
+  "name@gmail.com",
+  "testchat@gmail.com",
+  "truong@gmail.com",
+  "linhtm@gmail.com",
+  "nhatan@gmail.com"
+]
+
+for i in (0..6) do
+  au_tk = User.generate_unique_secure_token
+
+  User.create!(
+    id: user_ids[i],
+    email: user_emails[i],
+    password: "123456",
+    authentication_token: au_tk
+  )
+
+  Profile.create!(
+    user_id: user_ids[i],
+    userName: user_names[i],
+    displayName: user_emails[i]
+  )
+
+  if i >= 4
+    Lawyer.create!(
+      user_id: user_ids[i]
+    )
+
+    UserRole.create!(
+      user_id: user_ids[i],
+      role_id: 2
+    )
+  else
+    UserRole.create!(
+      user_id: user_ids[i],
+      role_id: 1
+    )
+  end
+end
+
+for j in (1..3) do
   3.times do
     LawyerSpecialize.create!(
-      lawyer_id: i,
+      lawyer_id: j,
       specialization_id: random.rand(1..8)
     )
   end
 end
 
-# Get current directory 
-File.dirname(__FILE__)
+for i in (0..3) do
+  for j in (1..3) do
+    Review.create!(
+      lawyer_id: j,
+      user_id: user_ids[i],
+      content: Faker::HarryPotter.book,
+      star: random.rand(1..5)
+    )
+  end
+end
 
-# Join it with relative path to the root
-File.join(File.dirname(__FILE__), '../')
+rooms_id = [
+  "-L0JIlU0SmyThNKSZBLE",
+  "-L1JIlU0SmyThNKSZBLE",
+  "-L2JIlU0SmyThNKSZBLE",
+  "-L3JIlU0SmyThNKSZBLE",
+  "-L4JIlU0SmyThNKSZBLE",
+  "-L5JIlU0SmyThNKSZBLE",
+  "-L6JIlU0SmyThNKSZBLE",
+  "-L7JIlU0SmyThNKSZBLE",
+  "-L8JIlU0SmyThNKSZBLE",
+  "-L9JIlU0SmyThNKSZBLE",
+  "-LxJIlU0SmyThNKSZBLE",
+  "-LaJIlU0SmyThNKSZBLE",
+]
 
-data = File.open("db/articles.tsv").read
-data.each_line do |article|
-  article = article.split("\t")
-  effect_status = article[5].split(":")[1]
-  effect_status = effect_status.strip()
-  Article.create!(
-    article_id: article[0],
-    content: article[1],
-    title: article[2],
-    public_day: DateTime.parse(article[3]),
-    effect_day: DateTime.parse(article[4]),
-    effect_status: effect_status,
-    created_at: article[6],
-    updated_at: article[7]
+r_ct = -1
+
+for i in (0..3) do
+  for j in (1..3) do
+    r_ct += 1
+    Room.create!(
+      lawyer_id: j,
+      user_id: user_ids[i],
+      id: rooms_id[r_ct],
+      description: Faker::HarryPotter.house
+    )
+  end
+end
+
+for i in (0..11) do
+  Task.create!(
+    room_id: rooms_id[i],
+    content: Faker::HarryPotter.quote,
+  )
+end
+
+for i in (1..7) do
+  MoneyAccount.create!(
+    profile_id: i,
+    ammount: 10000
+  )
+end
+
+for i in (1..7) do
+  DepositHistory.create!(
+    money_account_id: i,
+    ammount: 10
   )
 end

@@ -1,4 +1,6 @@
-class Api::V1::SearchArticlesController < ApplicationController
+class Api::V1::SearchArticlesController < Api::V1::ApplicationController
+  skip_before_action :authenticate_user_from_token!
+
   before_action :search_articles, only: :index
 
   def index
