@@ -86,14 +86,14 @@ ActiveRecord::Schema.define(version: 20180422070203) do
   end
 
   create_table "reviews", force: :cascade do |t|
-    t.string "user_id"
-    t.bigint "lawyer_id"
+    t.string "user_id", null: false
+    t.bigint "lawyer_id", null: false
     t.text "content"
     t.float "star", default: 0.0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["lawyer_id"], name: "index_reviews_on_lawyer_id"
-    t.index ["user_id", "lawyer_id"], name: "index_reviews_on_user_id_and_lawyer_id"
+    t.index ["user_id", "lawyer_id"], name: "index_reviews_on_user_id_and_lawyer_id", unique: true
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
@@ -134,7 +134,7 @@ ActiveRecord::Schema.define(version: 20180422070203) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["role_id"], name: "index_user_roles_on_role_id"
-    t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id"
+    t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
     t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
 

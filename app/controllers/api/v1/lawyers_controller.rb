@@ -27,24 +27,6 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
 
   attr_reader :lawyer, :profile
 
-  def find_profile
-    @profile = Profile.find_by userName: params[:id]
-    return if profile
-    render json: {
-      messages: I18n.t("app.api.messages.not_found",
-        authentication_keys: "lawyer")
-    }, status: :not_found
-  end
-
-  def find_lawyer
-    @lawyer = Lawyer.find_by user_id: profile.user_id
-    return if lawyer
-    render json: {
-      message: I18n.t("app.api.messages.not_found",
-        authentication_keys: "lawyer")
-    }, status: :not_found
-  end
-
   def response_show_succcess
     render json: {
       lawyer_info: {
@@ -89,6 +71,24 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
       message: I18n.t("app.api.messages.update_failed",
         authentication_keys: "lawyer")
     }, status: :unprocessable_entity
+  end
+
+  def find_profile
+    @profile = Profile.find_by userName: params[:id]
+    return if profile
+    render json: {
+      messages: I18n.t("app.api.messages.not_found",
+        authentication_keys: "lawyer")
+    }, status: :not_found
+  end
+
+  def find_lawyer
+    @lawyer = Lawyer.find_by user_id: profile.user_id
+    return if lawyer
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "lawyer")
+    }, status: :not_found
   end
 
   def correct_user

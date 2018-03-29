@@ -1,9 +1,9 @@
 class Api::V1::ReviewsController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User, except: :index
 
-  before_action :find_user, :correct_user, except: :index
+  before_action :check_lawyer, :connected_to_lawyer, only: :create
+  before_action :get_review, :correct_user, only: :update
   before_action :find_lawyer, only: :index
-  before_action :get_review, only: :update
 
   authorize_resource
 
@@ -14,7 +14,12 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
   def create
     @review = Review.new review_create_params
 
-    review.save ? response_create_success : response_create_failed
+    begin
+      review.save
+      response_create_success
+    rescue ActiveRecord::RecordNotUnique
+      response_create_failed
+    end
   end
 
   def update
@@ -24,11 +29,7 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
 
   private
 
-  attr_reader :reviews, :profile, :lawyer, :user, :review
-
-  def get_review
-    @review = Review.find_by id: params[:id]
-  end
+  attr_reader :reviews, :profile, :lawyer, :review, :room
 
   def response_update_success
     render json: {
@@ -68,24 +69,14 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
     }, status: :ok
   end
 
-  def find_user
-    @profile = Profile.find_by userName: params[:user_name]
-    if !profile
-      render json: {
-        message: I18n.t("app.api.messages.not_found",
-          authentication_keys: "users")
-      }, status: :not_found
-    else
-      @user = User.find_by id: profile.uid
-      if !user || user.role == 1
-        render json: {
-          messages: I18n.t("app.api.messages.not_have_permission_create",
-            authentication_keys: "review")
-        }, status: :unauthorized
-      else
-        return
-      end
-    end
+  def get_review
+    @review = Review.find_by id: params[:id]
+
+    return if review
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "review")
+    }, status: :not_found
   end
 
   def find_lawyer
@@ -108,11 +99,38 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
     end
   end
 
+  def check_lawyer
+    @lawyer = Lawyer.find_by id: params[:reviews][:lawyer_id]
+    return if lawyer
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "lawyer")
+    }, status: :not_found
+  end
+
+  def connected_to_lawyer
+    @room = Room.where(user_id: current_user.id).where(
+      lawyer_id: params[:reviews][:lawyer_id])
+    params[:reviews][:user_id] = current_user.id
+    return if room
+    render json: {
+      message: I18n.t("app.api.message.not_have_permission_create",
+        authentication_keys: "review")
+    }, status: :unauthorized
+  end
+
+  def correct_user
+    return if current_user.id == review.user_id
+    render json: {
+      message: I18n.t("app.api.messages.not_authorized")
+    }, status: :unauthorized
+  end
+
   def review_update_params
-    params.require(:review).permit Review::UPDATE_PARAMS
+    params.require(:reviews).permit Review::UPDATE_PARAMS
   end
 
   def review_create_params
-    params.require(:review).permit Review::CREATE_PARAMS
+    params.require(:reviews).permit Review::CREATE_PARAMS
   end
 end

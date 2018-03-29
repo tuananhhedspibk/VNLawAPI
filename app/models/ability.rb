@@ -2,7 +2,6 @@ class Ability
   include CanCan::Ability
 
   def initialize user
-    byebug
     if user.present?
       user_id = user.id
 
@@ -25,9 +24,6 @@ class Ability
       
       can :read, MoneyAccount, id: acc_id
       can :read, DepositHistory, money_account_id: acc_id
-      can :read, Task do |task|
-        room_ids.include? task.room_id
-      end
       
       if role == "User"
         can :create, DepositHistory
@@ -40,8 +36,7 @@ class Ability
 
         can :update, Lawyer, user_id: user_id
 
-        can :create, Task
-        can [:update, :destroy], Task do |task|
+        can [:create, :read, :update, :destroy], Task do |task|
           room_ids.include? task.room_id
         end
 

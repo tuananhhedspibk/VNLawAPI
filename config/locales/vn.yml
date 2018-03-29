@@ -18,6 +18,7 @@ vn:
         destroy_failed: "Delete %{authentication_keys} failed"
         not_found: "%{authentication_keys} not found"
         wrong_id: "Wrong %{authentication_keys} id"
+        
         users:
           sign_up_success: "Sign up success"
           sign_up_fail: "Sign up failed"

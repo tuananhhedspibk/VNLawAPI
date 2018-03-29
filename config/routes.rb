@@ -17,7 +17,6 @@ Rails.application.routes.draw do
 
           resources :users, only: [:show, :update],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
-              resources :reviews, only: [:create, :update]
               resources :deposit_histories, only: [:index, :create]
           end
           resources :lawyers, only: [:create, :show, :update],
@@ -25,9 +24,11 @@ Rails.application.routes.draw do
               resources :reviews, only: :index
               resources :lawyer_specializes, only: [:destroy, :create]
           end
-          resources :rooms, only: [:index, :create, :update] do
-            resources :tasks, only: [:index, :create, :update]
-            resources :payments, only: [:index, :update, :create]
+          resources :reviews, only: [:create, :update]
+          resources :rooms, only: [:index, :create, :update],
+            :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
+              resources :tasks, only: [:index, :create, :update, :destroy]
+              resources :payments, only: [:index, :update, :create]
           end
         end
     end

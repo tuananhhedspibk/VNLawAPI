@@ -20,6 +20,32 @@ class Api::V1::UsersController < Api::V1::ApplicationController
 
   attr_reader :user, :profile, :acc
 
+  def response_show_succcess
+    render json: {
+      user_info: {
+        email: user.email,
+        profile: user.profile.as_json(except: :user_id),
+        status: user.status,
+        mn_acc: acc.as_json(except: :profile_id)
+      }
+    }, status: :ok
+  end
+
+  def response_update_success
+    render json: {
+      message: I18n.t("app.api.messages.update_success",
+        authentication_keys: "user"),
+      profile: user.profile.as_json(except: :user_id)
+    }, status: :ok
+  end
+
+  def response_update_fail
+    render json: {
+      message: I18n.t("app.api.messages.update_failed",
+        authentication_keys: "user")
+    }, status: :unprocessable_entity
+  end
+
   def find_acc
     if request.headers["X-User-Token"]
       if request.headers["X-User-Token"] == user.authentication_token
@@ -46,32 +72,6 @@ class Api::V1::UsersController < Api::V1::ApplicationController
         return
       end
     end
-  end
-
-  def response_show_succcess
-    render json: {
-      user_info: {
-        email: user.email,
-        profile: user.profile.as_json(except: :user_id),
-        status: user.status,
-        mn_acc: acc.as_json(except: :profile_id)
-      }
-    }, status: :ok
-  end
-
-  def response_update_success
-    render json: {
-      message: I18n.t("app.api.messages.update_success",
-        authentication_keys: "user"),
-      profile: user.profile.as_json(except: :user_id)
-    }, status: :ok
-  end
-
-  def response_update_fail
-    render json: {
-      message: I18n.t("app.api.messages.update_failed",
-        authentication_keys: "user")
-    }, status: :unprocessable_entity
   end
 
   def user_params

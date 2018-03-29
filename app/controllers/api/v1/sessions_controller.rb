@@ -24,16 +24,6 @@ class Api::V1::SessionsController < Devise::SessionsController
 
   attr_reader :user
 
-  def login_params
-    params.require(:login).permit :email, :password
-  end
-
-  def invalid_login_attempt
-    render json: {
-      message: I18n.t("devise.failure.invalid", authentication_keys: "email")
-    }, status: :unauthorized
-  end
-
   def response_create_data
     render json: {
       message: I18n.t("devise.sessions.signed_in"),
@@ -47,6 +37,16 @@ class Api::V1::SessionsController < Devise::SessionsController
     render json: {
       message: I18n.t("devise.sessions.signed_out")
     }, status: :ok
+  end
+
+  def login_params
+    params.require(:login).permit :email, :password
+  end
+
+  def invalid_login_attempt
+    render json: {
+      message: I18n.t("devise.failure.invalid", authentication_keys: "email")
+    }, status: :unauthorized
   end
 
   def load_user

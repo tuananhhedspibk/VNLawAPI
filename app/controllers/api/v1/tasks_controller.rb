@@ -1,55 +1,43 @@
 class Api::V1::TasksController < Api::V1::ApplicationController
-  before_action :get_room
-  before_action :is_lawyer, except: :index
+  acts_as_token_authentication_handler_for User
+
+  before_action :get_room, only: [:index, :create]
   before_action :get_task, only: [:update, :destroy]
 
-  authorize_resource
-
   def index
+    @tasks = room.tasks
+    authorize! :read, tasks.first
     response_task_idx
   end
 
   def create
+    params[:tasks][:room_id] = room.id
     @task = Task.new task_create_params
+    authorize! :create, task
 
-    if task.save ? response_create_success : response_create_failed
+    task.save ? response_create_success : response_create_failed
   end
 
   def update
+    authorize! :update, task
     return response_update_success if task.update_attributes task_update_params
     response_update_failed
   end
 
   def destroy
-    if task.destroy ? response_destroy_success : response_destroy_failed
+    authorize! :destroy, task
+    task.destroy ? response_destroy_success : response_destroy_failed
   end
 
   private
 
   attr_reader :tasks, :task, :room
 
-  def get_task
-    @task = Task.find_by id: params[:id]
-    return if task
-    render json: {
-      message: I18n.t("app.api.messages.not_found",
-        authentication_keys: "task")
-    }, status: :not_found
-  end
-
-  def is_lawyer
-    return if current_user.role == 1
-    render json: {
-      message: I18n.t("app.api.messages.not_have_permission_create",
-        authentication_keys: "task")
-    }, status: :unauthorized
-  end
-
   def response_create_success
     render json: {
       message: I18n.t("app.api.messages.create_success",
         authentication_keys: "task"),
-      task: task.except(:rid)
+      task: task.as_json(except: :room_id)
     }, status: :ok
   end
 
@@ -64,7 +52,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
     render json: {
       messages: I18n.t("app.api.messages.update_success",
         authentication_keys: "task"),
-      task: task
+      task: task.as_json(except: [:room_id, :created_at])
     }, status: :ok
   end
 
@@ -91,12 +79,21 @@ class Api::V1::TasksController < Api::V1::ApplicationController
 
   def response_task_idx
     render json: {
-      tasks: room.tasks
+      tasks: tasks.as_json(except: [:room_id, :created_at])
     }, status: :ok
   end
 
+  def get_task
+    @task = Task.find_by id: params[:id]
+    return if task && task.room_id == params[:room_id]
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "task")
+    }, status: :not_found
+  end
+
   def get_room
-    @room = Room.find_by id: params[:id]
+    @room = Room.find_by id: params[:room_id]
     return if room
     render json: {
       message: I18n.t("app.api.messages.not_found",
@@ -104,11 +101,11 @@ class Api::V1::TasksController < Api::V1::ApplicationController
     }, status: :not_found
   end
 
-  def task_create_params
-    params.require(:task).permit Task.CREATE_PARAMS
+  def task_update_params
+    params.require(:tasks).permit Task::UPDATE_PARAMS
   end
 
-  def task_update_params
-    params.require(:task).permit Task.UPDATE_PARAMS
+  def task_create_params
+    params.require(:tasks).permit Task::CREATE_PARAMS
   end
 end

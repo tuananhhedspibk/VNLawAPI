@@ -1,5 +1,5 @@
 class Review < ApplicationRecord
-  CREATE_PARAMS = [:uid, :lid, :content, :star].freeze
+  CREATE_PARAMS = [:user_id, :lawyer_id, :content, :star].freeze
   UPDATE_PARAMS = [:content, :star].freeze
 
   belongs_to :user
