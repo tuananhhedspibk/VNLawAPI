@@ -35,6 +35,7 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
           except: [:id, :user_id, :created_at, :updated_at]),
         lawyer_profile: lawyer.as_json(except:
           [:user_id, :created_at, :updated_at]),
+        specializes: lawyer.specializations,
         status: lawyer.user.status
       }
     }, status: :ok

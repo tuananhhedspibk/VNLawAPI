@@ -82,11 +82,11 @@ for i in (0..6) do
   end
 end
 
-for j in (1..3) do
-  3.times do
+for i in (1..3) do
+  for j in (1..3)
     LawyerSpecialize.create!(
-      lawyer_id: j,
-      specialization_id: random.rand(1..8)
+      lawyer_id: i,
+      specialization_id: j
     )
   end
 end

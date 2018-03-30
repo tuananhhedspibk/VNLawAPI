@@ -1,5 +1,5 @@
 class LawyerSpecialize < ApplicationRecord
-  CREATE_PARAMS = [:role_id, :lid].freeze
+  CREATE_PARAMS = [:lawyer_id, :specialization_id].freeze
 
   belongs_to :lawyer
   belongs_to :specialization

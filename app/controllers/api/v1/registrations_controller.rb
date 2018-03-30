@@ -4,12 +4,11 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   def create
     @user = User.new user_params
 
-    byebug
     begin
       user.save!
       user.profile.build_money_account.save!
       response_create_success
-    rescue ActiveRecord::RecordNotUnique
+    rescue
       response_create_fail
     end
   end

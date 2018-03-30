@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20180422070203) do
     t.bigint "specialization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["lawyer_id", "specialization_id"], name: "index_lawyer_specializes_on_lawyer_id_and_specialization_id", unique: true
     t.index ["lawyer_id"], name: "index_lawyer_specializes_on_lawyer_id"
     t.index ["specialization_id"], name: "index_lawyer_specializes_on_specialization_id"
   end

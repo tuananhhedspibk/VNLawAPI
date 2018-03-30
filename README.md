@@ -90,7 +90,6 @@
   + form-data:
     - rooms[id] = 123456789
     - rooms[user_id] = 31921cm3md921d9m21
-    - rooms[lawyer_id] = 3219321932139213m21
     - rooms[description] = 99e1samiimsasasasa -- [option]
 
 ## /api/rooms/[:room_id]

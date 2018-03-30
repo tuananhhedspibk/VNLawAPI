@@ -3,23 +3,29 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
 
   before_action :find_room, only: :update
   before_action :load_object, only: [:index, :create]
-  before_action :check_lawyer_id, only: :create
-
-  authorize_resource
+  before_action :check_user_id, only: :create
 
   def index
     @rooms = user.rooms
+    authorize! :read, rooms.first
 
     response_rooms_idx
   end
 
   def create
-    @room = Room.new room_create_params
-
-    room.save ? response_create_success : response_create_failed
+    begin
+      params[:rooms][:lawyer_id] = user.id
+      @room = Room.new room_create_params
+      authorize! :create, room
+      room.save
+      response_create_success
+    rescue
+      response_create_failed
+    end
   end
 
   def update
+    authorize! :update, room
     return response_update_success if room.update_attributes room_update_params
     response_update_failed
   end
@@ -81,11 +87,13 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     end
   end
 
-  def check_lawyer_id
-    return if params[:rooms][:lawyer_id].to_i == user.id
+  def check_user_id
+    @us = User.find_by id: params[:rooms][:user_id]
+    return if @us && @us.role.name == "User"
     render json: {
-      message: I18n.t("app.api.messages.not_authorized")
-    }, status: :unauthorized
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "User")
+    }, status: :not_found
   end
 
   def room_update_params

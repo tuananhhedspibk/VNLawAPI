@@ -14,9 +14,9 @@ class Ability
 
       room_ids = user.room_ids
 
-      can :read, [Profile, Lawyer, Review, Role, UserRole]
+      can :read, [User, Profile, Lawyer, Review, Role, UserRole]
       can :update, Profile, user_id: user_id
-      can [:read, :update], User, id: user_id
+      can :update, User, id: user_id
 
       can :read, Payment do |payment|
         room_ids.include? payment.room_id
@@ -28,11 +28,16 @@ class Ability
       if role == "User"
         can :create, DepositHistory
 
-        can :create, Review
-        can :update, Review, user_id: user_id
-        can :read, Room, user_id: user_id
+        can [:create, :update], Review do |review|
+          review.user_id == user_id
+        end
+
+        can :read, Room do |room|
+          room.user_id == user.id
+        end
+
       elsif role == "Lawyer"
-        can :read, [Specialization, LawyerSpecialize]
+        can :read, Specialization
 
         can :update, Lawyer, user_id: user_id
 
@@ -40,12 +45,13 @@ class Ability
           room_ids.include? task.room_id
         end
 
-        can :read, Room, lawyer_id: user.id
-        can :create, Room
-        can :update, Room, lawyer_id: user.id
+        can [:read, :update, :create], Room do |room|
+          room.lawyer_id == user.id
+        end
 
-        can :create, LawyerSpecialize
-        can :destroy, LawyerSpecialize, lawyer_id: user.id
+        can [:create, :destroy, :read], LawyerSpecialize do |lawyer_specialize|
+          lawyer_specialize.lawyer_id == user.id
+        end
       end
     else
       can :read, [Profile, Lawyer, User, Review]

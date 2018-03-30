@@ -19,11 +19,10 @@ Rails.application.routes.draw do
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
               resources :deposit_histories, only: [:index, :create]
           end
-          resources :lawyers, only: [:create, :show, :update],
-            :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
-              resources :reviews, only: :index
-              resources :lawyer_specializes, only: [:destroy, :create]
+          resources :lawyers, only: [:create, :show, :update] do
+            resources :reviews, only: :index
           end
+          resources :lawyer_specializes, only: [:destroy, :create]
           resources :reviews, only: [:create, :update]
           resources :rooms, only: [:index, :create, :update],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
