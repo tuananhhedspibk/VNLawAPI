@@ -5,7 +5,7 @@ class CreateProfiles < ActiveRecord::Migration[5.1]
 
       t.string :userName
       t.string :displayName
-      t.string :avatar
+      t.string :avatar, default: "https://image.ibb.co/i23jUF/default_ava.png"
       t.datetime :birthday
 
       t.timestamps

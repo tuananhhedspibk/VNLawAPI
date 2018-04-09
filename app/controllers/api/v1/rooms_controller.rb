@@ -37,7 +37,12 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
   def response_rooms_idx
     render json: {
       rooms: rooms.as_json(only: :id,
-        include: [:lawyer => {:only => :user_id}, :user])
+        :include => {
+          :lawyer => {:only => :user_id,
+            :include => {:profile => {only: [:displayName, :avatar]}}},
+          :user => {:only => :id,
+            :include => {:profile => {only: [:displayName, :avatar]}}}
+        })
     }, status: :ok
   end
 
