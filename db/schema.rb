@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 20180422070203) do
     t.string "user_id"
     t.string "userName"
     t.string "displayName"
-    t.string "avatar", default: "https://image.ibb.co/i23jUF/default_ava.png"
+    t.string "avatar"
     t.datetime "birthday"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
