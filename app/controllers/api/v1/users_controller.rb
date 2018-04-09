@@ -21,14 +21,25 @@ class Api::V1::UsersController < Api::V1::ApplicationController
   attr_reader :user, :profile, :acc
 
   def response_show_succcess
-    render json: {
-      user_info: {
-        email: user.email,
-        profile: user.profile.as_json(except: :user_id),
-        status: user.status,
-        mn_acc: acc.as_json(except: :profile_id)
-      }
-    }, status: :ok
+    if user.profile.avatar?
+      render json: {
+        user_info: {
+          email: user.email,
+          profile: user.profile.as_json(except: :user_id),
+          status: user.status,
+          mn_acc: acc.as_json(except: :profile_id)
+        }
+      }, status: :ok
+    else
+      render json: {
+        user_info: {
+          email: user.email,
+          profile: user.profile.as_json(except: [:user_id, :avatar]),
+          status: user.status,
+          mn_acc: acc.as_json(except: :profile_id)
+        }
+      }, status: :ok
+    end
   end
 
   def response_update_success
