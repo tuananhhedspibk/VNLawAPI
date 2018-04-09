@@ -27,7 +27,7 @@ class Api::V1::SessionsController < Devise::SessionsController
   def response_create_data
     render json: {
       message: I18n.t("devise.sessions.signed_in"),
-      user_token: user.authentication_token,
+      userToken: user.authentication_token,
       userName: user.profile.userName,
       role: user.role.name
     }, status: :ok

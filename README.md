@@ -56,6 +56,7 @@
     - X-User-Email: test@gmail.com
   + form-data:
     - users[profile_attributes][displayName] = 123456
+    - users[profile_attributes][avatar] = image.png
   + 戻り値
     {
       message: Update user success,

@@ -36,7 +36,8 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
 
   def response_rooms_idx
     render json: {
-      rooms: rooms.as_json(except: [:id, :created_at, :updated_at])
+      rooms: rooms.as_json(only: :id,
+        include: [:lawyer => {:only => :user_id}, :user])
     }, status: :ok
   end
 

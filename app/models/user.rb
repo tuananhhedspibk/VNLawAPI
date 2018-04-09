@@ -1,12 +1,14 @@
 class User < ApplicationRecord
   acts_as_token_authenticatable
 
+  mount_uploader :avatar, AvatarUploader
+
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   REGISTRATION_PARAMS = [:id, :email, :password, :password_confirmation,
     profile_attributes: [:displayName, :birthday, :photoURL, :userName],
     user_role_attributes: [:role_id]].freeze
   UPDATE_PARAMS = [profile_attributes: [:displayName,
-    :birthday, :photoURL]].freeze
+    :birthday, :avatar]].freeze
 
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable
