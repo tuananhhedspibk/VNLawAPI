@@ -12,6 +12,13 @@ gem "i18n-js"
 gem "searchkick"
 gem "rack-cors", :require => "rack/cors"
 gem "apipie-rails"
+gem "devise"
+gem "cancancan"
+gem "simple_token_authentication"
+gem "rack-attack"
+gem "faker"
+gem "carrierwave"
+gem "mini_magick"
 
 group :development, :test do
   gem "byebug", platform: :mri
