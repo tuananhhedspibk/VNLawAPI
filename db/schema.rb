@@ -10,13 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180422070203) do
+ActiveRecord::Schema.define(version: 20180422070205) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "api_keys", force: :cascade do |t|
     t.string "access_token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "content_types", force: :cascade do |t|
+    t.integer "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -64,7 +70,7 @@ ActiveRecord::Schema.define(version: 20180422070203) do
   end
 
   create_table "payments", force: :cascade do |t|
-    t.string "room_id"
+    t.bigint "room_id"
     t.datetime "startTime"
     t.datetime "endTime"
     t.integer "ammount"
@@ -104,7 +110,17 @@ ActiveRecord::Schema.define(version: 20180422070203) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "rooms", id: :string, force: :cascade do |t|
+  create_table "room_files", force: :cascade do |t|
+    t.bigint "room_id"
+    t.bigint "content_type_id"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_type_id"], name: "index_room_files_on_content_type_id"
+    t.index ["room_id"], name: "index_room_files_on_room_id"
+  end
+
+  create_table "rooms", force: :cascade do |t|
     t.bigint "lawyer_id"
     t.string "user_id"
     t.text "description"
@@ -121,7 +137,7 @@ ActiveRecord::Schema.define(version: 20180422070203) do
   end
 
   create_table "tasks", force: :cascade do |t|
-    t.string "room_id"
+    t.bigint "room_id"
     t.text "content"
     t.integer "status", default: 0
     t.datetime "created_at", null: false
@@ -163,6 +179,8 @@ ActiveRecord::Schema.define(version: 20180422070203) do
   add_foreign_key "profiles", "users"
   add_foreign_key "reviews", "lawyers"
   add_foreign_key "reviews", "users"
+  add_foreign_key "room_files", "content_types"
+  add_foreign_key "room_files", "rooms"
   add_foreign_key "rooms", "lawyers"
   add_foreign_key "rooms", "users"
   add_foreign_key "tasks", "rooms"
