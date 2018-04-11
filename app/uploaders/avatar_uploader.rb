@@ -24,6 +24,6 @@ class AvatarUploader < CarrierWave::Uploader::Base
   end
 
   def extension_whitelist
-    %w(jpg jpeg gif png pdf)
+    %w(jpg jpeg gif png)
   end
 end

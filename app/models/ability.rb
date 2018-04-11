@@ -24,6 +24,10 @@ class Ability
       
       can :read, MoneyAccount, id: acc_id
       can :read, DepositHistory, money_account_id: acc_id
+
+      can [:create, :read], RoomFile do |file|
+        room_ids.include? file.room_id
+      end
       
       if role == "User"
         can :create, DepositHistory

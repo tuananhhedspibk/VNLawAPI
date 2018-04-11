@@ -102,38 +102,20 @@ for i in (0..3) do
   end
 end
 
-rooms_id = [
-  "-L0JIlU0SmyThNKSZBLE",
-  "-L1JIlU0SmyThNKSZBLE",
-  "-L2JIlU0SmyThNKSZBLE",
-  "-L3JIlU0SmyThNKSZBLE",
-  "-L4JIlU0SmyThNKSZBLE",
-  "-L5JIlU0SmyThNKSZBLE",
-  "-L6JIlU0SmyThNKSZBLE",
-  "-L7JIlU0SmyThNKSZBLE",
-  "-L8JIlU0SmyThNKSZBLE",
-  "-L9JIlU0SmyThNKSZBLE",
-  "-LxJIlU0SmyThNKSZBLE",
-  "-LaJIlU0SmyThNKSZBLE",
-]
-
-r_ct = -1
 
 for i in (0..3) do
   for j in (1..3) do
-    r_ct += 1
     Room.create!(
       lawyer_id: j,
       user_id: user_ids[i],
-      id: rooms_id[r_ct],
       description: Faker::HarryPotter.house
     )
   end
 end
 
-for i in (0..11) do
+for i in (1..12) do
   Task.create!(
-    room_id: rooms_id[i],
+    room_id: i,
     content: Faker::HarryPotter.quote,
   )
 end
@@ -151,3 +133,6 @@ for i in (1..7) do
     ammount: 10
   )
 end
+
+ContentType.create! name: "File"
+ContentType.create! name: "Image"

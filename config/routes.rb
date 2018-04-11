@@ -29,7 +29,9 @@ Rails.application.routes.draw do
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
               resources :tasks, only: [:index, :create, :update, :destroy]
               resources :payments, only: [:index, :update, :create]
+              resources :room_files, only: :index
           end
+          resources :room_files, only: :create
         end
     end
   end

@@ -1,7 +1,7 @@
 class CreatePayments < ActiveRecord::Migration[5.1]
   def change
     create_table :payments do |t|
-      t.references :room, foreign_key: true, type: :string
+      t.references :room, foreign_key: true
 
       t.datetime :startTime
       t.datetime :endTime

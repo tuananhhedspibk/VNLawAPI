@@ -354,3 +354,86 @@
     {
       "message": "Delete task success"
     }
+
+## /api/rooms/[:room_id]/room_files
+  + メソード: GET
+  + headers:
+    - X-Api-Token: 21c3j12c219jd21921j1
+    - X-User-Email: testnotifi_test2@gmail.com
+    - X-User-Token: vfGdEvig5hpK7iBPbxEr
+  + 戻り値
+    {
+      files: [
+        {
+          "id": 1,
+          "room_id": 2,
+          "content_type_id": 2,
+          "file": {
+            "url": "/uploads/file/2/pdf_viewer_icon.png",
+            "thumb": {
+              "url": "/uploads/file/2/thumb_pdf_viewer_icon.png"
+            },
+            "thumb_medium": {
+              "url": "/uploads/file/2/thumb_medium_pdf_viewer_icon.png"
+            },
+            "thumb_small": {
+              "url": "/uploads/file/2/thumb_small_pdf_viewer_icon.png"
+            }
+          },
+          "created_at": "2018-04-11T16:24:33.671Z",
+          "updated_at": "2018-04-11T16:24:33.671Z"
+        },
+        {
+          "id": 2,
+          "room_id": 2,
+          "content_type_id": 1,
+          "file": {
+            "url": "/uploads/file/2/KH2016-2017-1907.pdf",
+            "thumb": {
+              "url": "/uploads/file/2/thumb_KH2016-2017-1907.pdf"
+            },
+            "thumb_medium": {
+              "url": "/uploads/file/2/thumb_medium_KH2016-2017-1907.pdf"
+            },
+            "thumb_small": {
+              "url": "/uploads/file/2/thumb_small_KH2016-2017-1907.pdf"
+            }
+          },
+          "created_at": "2018-04-11T16:27:15.740Z",
+          "updated_at": "2018-04-11T16:27:15.740Z"
+        }
+      ]
+    }
+
+## /api/room_files/
+  + メソード: POST
+  + headers:
+    - X-Api-Token: 21c3j12c219jd21921j1
+    - X-User-Email: testnotifi_test2@gmail.com
+    - X-User-Token: vfGdEvig5hpK7iBPbxEr
+  + form-data
+    - room_files[room_id]: 1
+    - room_files[file]: 
+    - room_files[content_type_id]: 1
+  + 戻り値
+    {
+      "file_infor": {
+        "id": 4,
+        "room_id": 5,
+        "content_type_id": 1,
+        "file": {
+          "url": "/uploads/file/5/KH2016-2017-1907.pdf",
+          "thumb": {
+            "url": "/uploads/file/5/thumb_KH2016-2017-1907.pdf"
+          },
+          "thumb_medium": {
+            "url": "/uploads/file/5/thumb_medium_KH2016-2017-1907.pdf"
+          },
+          "thumb_small": {
+            "url": "/uploads/file/5/thumb_small_KH2016-2017-1907.pdf"
+          }
+        },
+        "created_at": "2018-04-11T16:41:19.709Z",
+        "updated_at": "2018-04-11T16:41:19.709Z"
+      }
+    }
