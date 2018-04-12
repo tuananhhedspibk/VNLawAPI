@@ -391,10 +391,7 @@ class Api::V1::ArticlesController < ApplicationController
           '<div class="modal-body">' +
           '<p>Nội dung sửa đổi: </p><p class = "content_modified">'+ content +'</p>' +
           '</div></div></div></div>'
-        # '<div class="modifed_outer"> <div class="modified_info"><div class="modified_info_content"><span class="close_modified_info">&times;</span><p>Được sửa đổi, bổ sung tại <a target="_blank" href="/articles/'
-        # insert_html += ll_id +'#'+ post + '">' + type  + ' ' + title + '</a></p><p>Ban hành ngày: '
-        # insert_html +=  public_day +'</p><p>Nội dung sửa đổi: </p><p class = "content_modified"> '+ content +'</p></div></div>'
-        # insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
+        insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
         @full_html = @full_html[0,find.end(0)] + insert_html + @full_html[find.end(0),@full_html.length]
       end
     end 
