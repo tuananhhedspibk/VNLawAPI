@@ -19,6 +19,10 @@ gem "rack-attack"
 gem "faker"
 gem "carrierwave"
 gem "mini_magick"
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-facebook"
+gem "figaro"
 
 group :development, :test do
   gem "byebug", platform: :mri
