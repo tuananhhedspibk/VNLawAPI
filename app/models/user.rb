@@ -17,7 +17,8 @@ class User < ApplicationRecord
   has_one :money_account, through: :profile
   has_one :user_role, dependent: :destroy
   has_one :role, through: :user_role
-
+  
+  has_many :deposit, dependent: :destroy 
   has_many :reviews, dependent: :destroy
   has_many :rooms, dependent: :destroy
 
