@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180422070205) do
+ActiveRecord::Schema.define(version: 20180422070206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(version: 20180422070205) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["money_account_id"], name: "index_deposit_histories_on_money_account_id"
+  end
+
+  create_table "deposits", force: :cascade do |t|
+    t.string "user_id"
+    t.string "refcode"
+    t.boolean "done"
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_deposits_on_user_id"
   end
 
   create_table "lawyer_specializes", force: :cascade do |t|
@@ -171,6 +181,7 @@ ActiveRecord::Schema.define(version: 20180422070205) do
   end
 
   add_foreign_key "deposit_histories", "money_accounts"
+  add_foreign_key "deposits", "users"
   add_foreign_key "lawyer_specializes", "lawyers"
   add_foreign_key "lawyer_specializes", "specializations"
   add_foreign_key "lawyers", "users"
