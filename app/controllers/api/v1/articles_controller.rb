@@ -27,7 +27,6 @@ class Api::V1::ArticlesController < ApplicationController
 
   def get_article
     @article = Article.find_by id: params[:id]
-    render_index_html
   end
 
   def render_index_html
@@ -36,7 +35,7 @@ class Api::V1::ArticlesController < ApplicationController
       @index_html = ''
       @full_html =''
       remove_redundant_element
-      replace_search_link
+
       @parts = @article.parts.order(part_index: :asc)
       @start_index = 0
       @parts.each do |part|
@@ -44,31 +43,31 @@ class Api::V1::ArticlesController < ApplicationController
           insert_big_tag(part, 1)
         end
 
-        chapters = part.chapters.order(chap_index: :asc)
+        chapters = part.chapters
         chapters.each do |chapter|
           if chapter.totalchap > 0
             insert_big_tag(chapter, 2)
           end
 
-          secs = chapter.sections.order(sec_index: :asc)
+          secs = chapter.sections
           secs.each do |sec|
             if sec.totalsec > 0
               insert_big_tag(sec, 3)
             end
 
-            laws = sec.laws.order(law_index: :asc)
+            laws = sec.laws
             laws.each do |law|
               if law.totallaw> 0
                 insert_big_tag(law, 4)
               end
 
-              items = law.items.order(item_index: :asc)
+              items = law.items
               items.each do |item|
                 if item.totalitem > 0
                   insert_small_tag(item, 1)
                 end
 
-                points = item.points.order(point_index: :asc)
+                points = item.points
                 points.each do |point|
                   if point.totalpoint > 0
                     insert_small_tag(point, 2)
@@ -79,17 +78,8 @@ class Api::V1::ArticlesController < ApplicationController
           end
         end
       end
-      replace_definitions
-      if @article.isLawModify?
-        insert_html_law_modify
-      end
-
-      if @article.isModifedLaw?
-        insert_html_modified_law
-      end
-
-      @article.update_attributes(full_html: @full_html)
       @article.update_attributes(index_html: @index_html)
+      @article.update_attributes(full_html: @full_html)
     end
   end
   
@@ -134,7 +124,7 @@ class Api::V1::ArticlesController < ApplicationController
     end
 
     if pointIndex != nil
-      points = Point.where(law_id: article.id, point_index: pointIndex)
+      points = article.points.where(point_index: pointIndex)
       points.each do |point|
         if point.part_index == partIndex &&
           point.chap_index == chapIndex &&
@@ -145,7 +135,7 @@ class Api::V1::ArticlesController < ApplicationController
         end
       end
     elsif itemIndex != nil
-      items = Item.where(law_id: article.id, item_index: itemIndex)
+      items = article.items.where(item_index: itemIndex)
       items.each do |item|
         if item.part_index == partIndex &&
           item.chap_index == chapIndex &&
@@ -155,7 +145,7 @@ class Api::V1::ArticlesController < ApplicationController
         end
       end
     elsif
-      laws = Law.where(law_id: article.id, law_index: lawIndex)
+      laws = article.laws.where(law_index: lawIndex)
       laws.each do |law|
         if law.part_index == partIndex &&
           law.chap_index == chapIndex &&
@@ -178,7 +168,7 @@ class Api::V1::ArticlesController < ApplicationController
   def convert2regex(string)
     string =  eval("string")
     string = string.force_encoding("UTF-8")
-    symbol = ['_','*','#',"\n",'\\']
+    symbol = ['_','*','#',"\n"]
 
     symbol.each do |a| 
       string = string.gsub(a,"")
@@ -198,7 +188,7 @@ class Api::V1::ArticlesController < ApplicationController
     string = string.gsub('!','\\)')
     string = string.gsub("/",'\/')
     string = string.gsub(".","\\.")
-    string = string.gsub(/\s/,'(\s|&nbsp;| )+')
+    string = string.gsub(/\s/,'\s+')
     return string
   end
 
@@ -229,13 +219,13 @@ class Api::V1::ArticlesController < ApplicationController
         insert_html_tag(object.chap_name, object.chap_name,
           position, 'chap_index', true)
       when 3
-        position = "#{object.part_index+1}_#{object.chap_index+1}_" + 
-          "#{object.sec_index+1}_0_0_0"
+        position = "#{object.part_index+1}_#{object.chap_index+1}_
+          #{object.sec_index+1}_0_0_0"
         insert_html_tag(object.sec_name, object.sec_name,
           position, 'sec_index', true)
       when 4
-        position = "#{object.part_index+1}_#{object.chap_index+1}_" + 
-          "#{object.sec_index+1}_#{object.law_index+1}_0_0"
+        position = "#{object.part_index+1}_#{object.chap_index+1}_
+          #{object.sec_index+1}_#{object.law_index+1}_0_0"
         insert_html_tag(firstStrip(object.law_content),
           object.law_name, position, 'law_index', true)
       end
@@ -245,32 +235,34 @@ class Api::V1::ArticlesController < ApplicationController
     position = ""
     case type
       when 1
-        position = "#{object.part_index+1}_#{object.chap_index+1}_" +
-          "#{object.sec_index+1}_#{object.law_index+1}_#{object.item_index+1}_0"
+        position = "#{object.part_index+1}_#{object.chap_index+1}_
+          #{object.sec_index+1}_#{object.law_index+1}_
+          #{object.item_index+1}_0"
         insert_html_tag(firstStrip(object.item_content), 
           object.item_name, position, 'item_index', false)
       when 2
-        position = "#{object.part_index+1}_#{object.chap_index+1}_" +
-          "#{object.sec_index+1}_#{object.law_index+1}_#{object.item_index+1}_#{object.point_index+1}"
+        position = "#{object.part_index+1}_#{object.chap_index+1}_
+          #{object.sec_index+1}_#{object.law_index+1}_
+          #{object.item_index+1}_#{object.point_index+1}"
         insert_html_tag(firstStrip(object.point_content),
           object.point_name, position, 'point_index', false)
       end
   end
 
   def insert_html_tag (string, name, position, type, style)
-    pattern = '(\s|&nbsp;| )*(<[^<]+>)(\s|&nbsp;| )*' + convert2regex(string)
-    find = (/#{pattern}/m).match(@full_html[@start_index,@full_html.length])
+    pattern = '\s*(<[^<]+>)\s*' + convert2regex(string) + '\s*(<[^<]+>)\s*'
+    find = /#{pattern}/.match(@full_html[@start_index,@full_html.length])
     if find != nil
-      html_insert = '<a name="' + position + '"></a>'
-      @full_html = @full_html[0,@start_index+find.end(0)] + html_insert + @full_html[@start_index + find.end(0),@full_html.length]
-      @start_index += find.end(0)
+      html_insert = '<a id="' + position + '"></a>'
+      @full_html = @full_html[0,@start_index+find.begin(0)]
+        + html_insert + @full_html[@start_index + find.begin(0),
+        @full_html.length]
+      @start_index = find.begin(0)
       if style == true
         @index_html +=  '<div class="' + type + '">
-          <a class="internal_link" href="#' + position + '">' + name + '</a></div>'
+          <a class="internal_link" href="#' + position + '">'
+          + name + '</a></div>'
       end
-    else
-      print "ERROR"
-      print pattern + "___"
     end
   end
 
@@ -310,97 +302,7 @@ class Api::V1::ArticlesController < ApplicationController
     else 
       point_index = 0
     end
-    return position = "#{part_index}_#{chap_index}_#{sec_index}_#{law_index}_#{item_index}_#{point_index}"
-  end
-
-  def replace_search_link
-    pattern = '<a[^>]+vbpq-timkiem[^>]+>'
-    find = (/#{pattern}/m).match(@full_html)
-    while find
-      len = find.length
-      for i in 1..len
-        replace_link =convert_replace_link(find[i-1])
-        @full_html = @full_html[0,find.begin(i-1)] + replace_link + @full_html[find.end(i-1),@full_html.length]
-        break
-      end
-      find = (/#{pattern}/m).match(@full_html)
-    end
-  end
-
-  def convert_replace_link (string)
-    pattern = '<a[^>]+vbpq-timkiem[^>]+Keyword='
-    findStart = (/#{pattern}/m).match(string)
-    pattern = '&'
-    findEnd = (/#{pattern}/m).match(string)
-    if findStart && findEnd
-      return '<a target="_blank" class="toanvan" href="/searchlaw?query=' + string[findStart.end(0),findEnd.begin(0)]
-    end 
-  end
-
-  def insert_html_law_modify
-    @modifies = @article.relationshipmodifies
-    browsed = []
-    @modifies.each do |a|
-      if browsed.include? a.position 
-        next
-      end
-      browsed.push(a.position)
-      title = firstStrip(get_title(@article,a.position))
-      modified_law_id = a.modified_law_id
-      html_insert = '<a target="_blank" title="Sửa đổi văn bản" href="/articles/' + modified_law_id + '#'+sumary_to_position(a)+'" class="link_modify"><i class="fa fa-link"></i></a>'
-      if title != nil
-        pattern = convert2regex(title)
-        find = /#{pattern}/m.match(@full_html)
-        if find != nil
-          @full_html = @full_html[0,find.end(0)] + html_insert + @full_html[find.end(0),@full_html.length]
-        end
-      end
-    end
-  end
-
-  def insert_html_modified_law
-    @reverse_relationshipmodifies = @article.reverse_relationshipmodifies
-    @reverse_relationshipmodifies.each do |a|
-      position = sumary_to_position(a)
-      law_modifies = Article.where(id: a.law_id)
-      law_modify = nil
-      for l in law_modifies
-        law_modify = l
-        break
-      end
-      pattern = '<a name="' + position + '"></a>'
-      find = /#{pattern}/.match(@full_html)
-      if find != nil
-        type = law_modify.article_type
-        title = law_modify.title
-        post = a.position
-        ll_id = law_modify.id
-        public_day = law_modify.public_day.to_formatted_s(:long)
-        content = get_title(law_modify,a.position).to_s
-        content = reform_html(content)
-        insert_html ='<i class="fa fa-edit" data-toggle="modal" data-target="#'+ll_id+'_'+post+'"></i>'+
-          '<div class="modal fade" id="'+ll_id+'_'+post+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">'+
-          '<div class="modal-dialog modal-dialog-centered" role="document">' +
-          '<div class="modal-content">' +
-          '<div class="modal-header">' +
-          '<h5 class="modal-title" id="exampleModalLabel">'+
-          'Được sửa đổi, bổ sung tại <a target="_blank" href="/articles/'+ll_id+'#'+post+
-          '">' + type  + ' ' + "title" + '</a></h5>' +
-          ' <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-          '<span aria-hidden="true">&times;</span></button></div>' +
-          '<div class="modal-body">' +
-          '<p>Nội dung sửa đổi: </p><p class = "content_modified">'+ content +'</p>' +
-          '</div></div></div></div>'
-        insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
-        @full_html = @full_html[0,find.end(0)] + insert_html + @full_html[find.end(0),@full_html.length]
-      end
-    end 
-  end
-
-  def replace_definitions
-    defs = Definitionresult.getDef
-    for d in defs
-      @full_html.gsub!(/#{d.concept}/i, d.sentence)
-    end
+    return position = "#{part_index}_#{chap_index}_
+      #{sec_index}_#{law_index}_#{item_index}_#{point_index}"
   end
 end
