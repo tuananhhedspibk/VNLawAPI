@@ -11,6 +11,7 @@ class Lawyer < ApplicationRecord
   has_one :profile, through: :user
   has_many :rooms, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :tasks, through: :rooms
 
   has_many :lawyer_specializes, dependent: :destroy
   has_many :specializations, through: :lawyer_specializes

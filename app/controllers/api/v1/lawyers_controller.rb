@@ -1,7 +1,7 @@
 class Api::V1::LawyersController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User, only: :update
 
-  before_action :find_profile, :find_lawyer, except: :create
+  before_action :find_profile, :find_lawyer, :find_acc, except: :create
   before_action :correct_user, only: :update
 
   authorize_resource
@@ -25,17 +25,20 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
 
   private
 
-  attr_reader :lawyer, :profile
+  attr_reader :lawyer, :profile, :mn_acc
 
   def response_show_succcess
     render json: {
       lawyer_info: {
+        id: lawyer.id,
         email: lawyer.user.email,
         base_profile: lawyer.user.profile.as_json(
           except: [:id, :user_id, :created_at, :updated_at]),
         lawyer_profile: lawyer.as_json(except:
-          [:user_id, :created_at, :updated_at]),
-        specializes: lawyer.specializations,
+          [:created_at, :updated_at]),
+        lawyer_specializes: lawyer.lawyer_specializes.as_json(only: :id),
+        specializes: lawyer.specializations.as_json(only: :name),
+        mn_acc: mn_acc.as_json(only: [:ammount, :updated_at]),
         status: lawyer.user.status
       }
     }, status: :ok
@@ -72,6 +75,14 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
       message: I18n.t("app.api.messages.update_failed",
         authentication_keys: "lawyer")
     }, status: :unprocessable_entity
+  end
+
+  def find_acc
+    if request.headers["X-User-Token"]
+      if request.headers["X-User-Token"] == lawyer.user.authentication_token
+        @mn_acc = profile.money_account
+      end
+    end
   end
 
   def find_profile
