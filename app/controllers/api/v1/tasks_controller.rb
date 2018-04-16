@@ -1,12 +1,27 @@
 class Api::V1::TasksController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User
 
-  before_action :get_room, only: [:index, :create]
+  before_action :check_type, only: :index
+  before_action :get_room, only: :create
   before_action :get_task, only: [:update, :destroy]
 
   def index
-    @tasks = room.tasks
-    authorize! :read, tasks.first
+    if room
+      @tasks = room.tasks
+      authorize! :read, tasks.first
+    elsif lawyer
+      @tasks = []
+      lawyer.rooms.each do |room|
+        username = room.user.profile.displayName
+        tasks_list = room.tasks.as_json(only: [:content, :status, :updated_at])
+        room_val = {
+          "id": room.id,
+          "targetUser": username,
+          "tasks": tasks_list
+        }
+        tasks << room_val
+      end
+    end
     response_task_idx
   end
 
@@ -31,7 +46,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
 
   private
 
-  attr_reader :tasks, :task, :room
+  attr_reader :tasks, :task, :room, :lawyer
 
   def response_create_success
     render json: {
@@ -99,6 +114,23 @@ class Api::V1::TasksController < Api::V1::ApplicationController
       message: I18n.t("app.api.messages.not_found",
         authentication_keys: "room")
     }, status: :not_found
+  end
+
+  def get_lawyer
+    @lawyer = Lawyer.find_by id: params[:lawyer_id]
+    return if lawyer
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "room")
+    }, status: :not_found
+  end
+
+  def check_type
+    if params[:lawyer_id] && params[:lawyer_id].length > 0
+      get_lawyer
+    elsif params[:room_id] && params[:room_id].length > 0
+      get_room
+    end
   end
 
   def task_update_params

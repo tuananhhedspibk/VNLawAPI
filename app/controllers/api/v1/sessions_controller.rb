@@ -24,12 +24,26 @@ class Api::V1::SessionsController < Devise::SessionsController
   attr_reader :user
 
   def response_create_data
-    render json: {
-      message: I18n.t("devise.sessions.signed_in"),
-      userToken: user.authentication_token,
-      userName: user.profile.userName,
-      role: user.role.name
-    }, status: :ok
+    if (user.role.name == 'Lawyer')
+      render json: {
+        id: user.id,
+        message: I18n.t("devise.sessions.signed_in"),
+        userToken: user.authentication_token,
+        userName: user.profile.userName,
+        displayName: user.profile.displayName,
+        role: user.role.name,
+        lawyer_id: user.lawyer.id
+      }, status: :ok
+    else
+      render json: {
+        id: user.id,
+        message: I18n.t("devise.sessions.signed_in"),
+        userToken: user.authentication_token,
+        userName: user.profile.userName,
+        displayName: user.profile.displayName,
+        role: user.role.name
+      }, status: :ok
+    end
   end
 
   def response_destroy

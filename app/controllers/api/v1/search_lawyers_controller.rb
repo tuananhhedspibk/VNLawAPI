@@ -1,6 +1,4 @@
 class Api::V1::SearchLawyersController < Api::V1::ApplicationController
-  skip_before_action :authenticate_user_from_token!
-
   before_action :search_lawyers, only: :index
 
   attr_reader :lawyers
@@ -9,11 +7,21 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
     current_page = 1
     @lawyers_elastic = []
 
-    if (lawyers.class == Searchkick::Results)
+    if lawyers.class == Searchkick::Results
       lawyersCount = lawyers.total_entries
       lawyers.hits.each do |lawyer|
-        @lawyers_elastic << Lawyer.includes(:specializations)
-          .find_by(id: lawyer["_id"])
+        profile = Profile.find_by id: lawyer["_id"]
+        @lawyers_elastic << Lawyer.find_by(user_id: profile.user_id)
+      end
+      if params[:sort_by] && params[:sort_by].length > 0
+        order_by = ""
+        order_by = get_order_by
+        if order_by == :rate
+          @lawyers_elastic.sort_by! &:rate
+        elsif order_by == :price
+          @lawyers_elastic.sort_by! &:price
+        end
+        @lawyers_elastic.reverse!
       end
     else
       lawyersCount = lawyers.count
@@ -42,7 +50,9 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             limit_page: limit_page,
             suggest: false,
             lawyers: @lawyers_elastic[(current_page - 1) * 6, 6]
-              .as_json(include: :specializations)
+              .as_json(:include => {:specializations => {only: :name},
+                :profile => {only: [:displayName, :avatar]}},
+                only: [:intro, :rate, :price])
           }, status: :ok
         else
           render json: {
@@ -51,7 +61,9 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             limit_page: limit_page,
             suggest: false,
             lawyers: lawyers[(current_page - 1) * 6, 6]
-              .as_json(include: :specializations)
+              .as_json(:include => {:specializations => {only: :name},
+                :profile => {only: [:displayName, :avatar]}},
+                only: [:intro, :rate, :price])
           }, status: :ok
         end
       else
@@ -61,15 +73,21 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
     else
       if lawyers.class == Searchkick::Results
         if lawyers.suggestions.length > 0
-          all_lawyers_name = Lawyer.select(:id, :name).all
+          all_lawyers_name = []
+          Lawyer.all.each do |lawyer|
+            item = {}
+            item[:id] = lawyer.id
+            item[:name] = lawyer.profile.displayName
+            all_lawyers_name << item
+          end
           all_lawyers_name.each do |item|
-            item.name = removeSignOfVietnameseChar item.name
+            item[:name] = removeSignOfVietnameseChar item[:name]
           end
           match_lawyers_id = []
           lawyers.suggestions.each do |lawyer_name|
             all_lawyers_name.each do |item|
-              if item.name == lawyer_name
-                match_lawyers_id.push item.id
+              if item[:name] == lawyer_name
+                match_lawyers_id.push item[:id]
               end
             end
           end
@@ -79,7 +97,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             render json: {
               number_lawyers: 0,
               suggest: true,
-              suggest_name: @lawyers_suggest[0].name
+              suggest_name: @lawyers_suggest[0].profile.displayName
             }, status: :ok
           else
             render json: {
@@ -94,22 +112,31 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
   end
 
   def index_names
-    @names = Lawyer.select(:name).all
-    if @names
-      render json: {
-        names: @names
-      }, status: :ok
-    else
-      render json: {
-      }, status: :not_found
+    @names = []
+    Lawyer.all.each do |lawyer|
+      names << lawyer.profile.displayName
     end
+    render json: {
+      names: names
+    }, status: :ok
   end
 
   def top_lawyers
-    @top_lawyers = Lawyer.order(rate: :desc).limit(3)
+    @top_lawyers = Lawyer.order(rate: :desc).limit(5)
     if @top_lawyers
+      @top_lawyers_infor = []
+      @top_lawyers.each do |lawyer|
+        infor = {}
+        infor["fb_id"] = lawyer.user_id
+        infor["displayName"] = lawyer.profile.displayName
+        infor["avatar"] = lawyer.profile.avatar
+        infor["intro"] = lawyer.intro
+        infor["price"] = lawyer.price
+        infor["userName"] = lawyer.profile.userName
+        top_lawyers_infor << infor
+      end
       render json: {
-        top_lawyers: @top_lawyers
+        top_lawyers: top_lawyers_infor
       }, status: :ok
     else
       render json: {
@@ -118,6 +145,8 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
   end
 
   private
+
+  attr_reader :top_lawyers_names, :top_lawyers_infor, :names
 
   def removeSignOfVietnameseChar input
     vietnameseSign = [
@@ -146,30 +175,30 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
     return input
   end
 
+  def get_order_by
+    order_by = ""
+    if params[:sort_by].to_s == I18n.t("app.attorney.sort_by_rate")
+      order_by = "rate".to_sym
+    elsif params[:sort_by].to_s == I18n.t("app.attorney.sort_by_cost")
+      order_by = "price".to_sym
+    end
+    return order_by
+  end
+
   def search_lawyers
     order_by = ""
     if params[:sort_by] && params[:sort_by].length > 0
-      if params[:sort_by].to_s == t("app.attorney.sort_by_rate")
-        order_by = "rate".to_sym
-      elsif params[:sort_by].to_s == t("app.attorney.sort_by_cost")
-        order_by = "cost".to_sym
-      end
+      order_by = get_order_by
     end
     if params[:name] && params[:name].length > 0
-      if params[:sort_by] && params[:sort_by].length > 0
-        @lawyers = Lawyer.search params[:name], fields: [:name],
-          suggest: true, order: {order_by => :desc}, match: :phrase
-      else
-        @lawyers = Lawyer.search params[:name], fields: [:name],
-          suggest: true, order: {rate: :desc}, match: :phrase
-      end
+      @lawyers = Profile.search params[:name], fields: [:displayName],
+        suggest: true, match: :phrase
     else
       if params[:sort_by] && params[:sort_by].length > 0
-        @lawyers = Lawyer.includes(:specializations).all.order(
-          order_by => :desc)
+        @lawyers = Lawyer.all.order(order_by => :desc)
       else
-        @lawyers = Lawyer.includes(:specializations).all.order(rate: :desc)
-      end
+        @lawyers = Lawyer.all.order(rate: :desc)
+      end   
     end
   end
 end

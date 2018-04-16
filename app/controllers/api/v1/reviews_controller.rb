@@ -80,7 +80,8 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
   end
 
   def find_lawyer
-    @lawyer = Lawyer.find_by id: params[:lawyer_id]
+    @profile = Profile.find_by userName: params[:lawyer_id]
+    @lawyer = Lawyer.find_by user_id: profile.user_id
     return if lawyer
     render json: {
       message: I18n.t("app.api.messages.not_found",

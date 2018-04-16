@@ -1,11 +1,11 @@
 class Api::V1::UsersController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User, only: :update
 
-  before_action :find_object
+  before_action :find_object, except: :get_user_name_by_id
   before_action :find_acc, only: :show
 
   authorize_resource
-  skip_authorize_resource only: :show
+  skip_authorize_resource only: [:show, :get_user_name_by_id]
 
   def show
     response_show_succcess
@@ -21,25 +21,15 @@ class Api::V1::UsersController < Api::V1::ApplicationController
   attr_reader :user, :profile, :acc
 
   def response_show_succcess
-    if user.profile.avatar?
-      render json: {
-        user_info: {
-          email: user.email,
-          profile: user.profile.as_json(except: :user_id),
-          status: user.status,
-          mn_acc: acc.as_json(except: :profile_id)
-        }
-      }, status: :ok
-    else
-      render json: {
-        user_info: {
-          email: user.email,
-          profile: user.profile.as_json(except: [:user_id, :avatar]),
-          status: user.status,
-          mn_acc: acc.as_json(except: :profile_id)
-        }
-      }, status: :ok
-    end
+    render json: {
+      user_info: {
+        email: user.email,
+        profile: user.profile.as_json(only: [:displayName, :avatar]),
+        status: user.status,
+        role: user.role.name,
+        mn_acc: acc.as_json(only: [:ammount, :updated_at])
+      }
+    }, status: :ok
   end
 
   def response_update_success

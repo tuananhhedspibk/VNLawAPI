@@ -22,6 +22,7 @@ Rails.application.routes.draw do
           resources :lawyers, only: [:create, :show, :update],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
             resources :reviews, only: :index
+            resources :tasks, only: :index
           end
           resources :lawyer_specializes, only: [:destroy, :create]
           resources :reviews, only: [:create, :update]
