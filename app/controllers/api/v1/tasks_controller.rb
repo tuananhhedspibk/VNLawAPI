@@ -93,9 +93,15 @@ class Api::V1::TasksController < Api::V1::ApplicationController
   end
 
   def response_task_idx
-    render json: {
-      tasks: tasks.as_json(except: [:room_id, :created_at])
-    }, status: :ok
+    if params[:lawyer_id] && params[:lawyer_id].length > 0
+      render json: {
+        rooms: tasks.as_json(except: [:room_id, :created_at])
+      }, status: :ok
+    else
+      render json: {
+        tasks: tasks.as_json(except: [:room_id, :created_at])
+      }, status: :ok
+    end
   end
 
   def get_task
