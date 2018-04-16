@@ -20,7 +20,10 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   def response_create_success
     render json: {
       message: I18n.t("app.api.messages.users.sign_up_success"),
-      user: user.as_json(except: :id),
+      user: user.as_json(except: :id,
+        :include => {
+          :profile => {only: :avatar}
+        }),
       role: user.role.name
     }, status: :ok
   end
