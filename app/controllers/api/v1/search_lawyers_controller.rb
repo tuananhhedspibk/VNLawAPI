@@ -122,7 +122,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
   end
 
   def top_lawyers
-    @top_lawyers = Lawyer.order(rate: :desc).limit(3)
+    @top_lawyers = Lawyer.order(rate: :desc).limit(5)
     if @top_lawyers
       @top_lawyers_infor = []
       @top_lawyers.each do |lawyer|
@@ -131,6 +131,8 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
         infor["displayName"] = lawyer.profile.displayName
         infor["avatar"] = lawyer.profile.avatar
         infor["intro"] = lawyer.intro
+        infor["price"] = lawyer.price
+        infor["userName"] = lawyer.profile.userName
         top_lawyers_infor << infor
       end
       render json: {

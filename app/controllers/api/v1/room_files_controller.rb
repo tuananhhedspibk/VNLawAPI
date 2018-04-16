@@ -17,12 +17,16 @@ class Api::V1::RoomFilesController < Api::V1::ApplicationController
   def index
     authorize! :read, room
     @files = room.room_files
+    @files_names = []
+    files.each do |file|
+      files_names << File.basename(file.file.path)
+    end
     response_idx_success
   end
 
   private
 
-  attr_reader :files, :file, :room
+  attr_reader :files, :files_names, :file, :room
 
   def response_create_file_success
     render json: {
@@ -39,7 +43,8 @@ class Api::V1::RoomFilesController < Api::V1::ApplicationController
 
   def response_idx_success
     render json: {
-      files: files
+      list_files: files,
+      list_files_names: files_names
     }, status: :ok
   end
 

@@ -38,10 +38,10 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     render json: {
       rooms: rooms.as_json(only: :id,
         :include => {
-          :lawyer => {:only => :user_id,
+          :lawyer => {:only => [:id, :user_id],
             :include => {:profile => {only: [:displayName, :avatar]}}},
-          :user => {:only => :id,
-            :include => {:profile => {only: [:displayName, :avatar]}}}
+          :user => {:only => [:id, :status],
+            :include => {:profile => {only: [:displayName, :avatar, :userName]}}}
         })
     }, status: :ok
   end
@@ -65,7 +65,21 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     render json: {
       message: I18n.t("app.api.messages.create_success",
         authentication_keys: "room"),
-      room: room.as_json(except: :id)
+      room: room.as_json(except: [:user_id, :lawyer_id],
+        :include => {
+          :user => {
+            :only => :id,
+            :include => {
+              :profile => {only: :userName}
+            }
+          },
+          :lawyer => {
+            :only => :id,
+            :include => {
+              :profile => {only: :userName}
+            }
+          }
+        })
     }, status: :ok
   end
 

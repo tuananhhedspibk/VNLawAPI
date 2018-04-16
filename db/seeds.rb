@@ -128,7 +128,12 @@ for i in (0..17) do
       user_id: user_ids[i],
       intro: Faker::HarryPotter.quote,
       rate: rate,
-      price: price
+      price: price,
+      achievement: Faker::HarryPotter.quote,
+      cardNumber: rate,
+      certificate: price,
+      education: Faker::HarryPotter.house,
+      exp: rate
     )
 
     UserRole.create!(
@@ -160,7 +165,7 @@ for i in (1..13) do
 end
 
 for i in (0..3) do
-  for j in (1..3) do
+  for j in (1..14) do
     Review.create!(
       lawyer_id: j,
       user_id: user_ids[i],
@@ -188,14 +193,14 @@ for i in (1..12) do
   )
 end
 
-for i in (1..7) do
+for i in (1..18) do
   MoneyAccount.create!(
     profile_id: i,
     ammount: 10000
   )
 end
 
-for i in (1..7) do
+for i in (1..18) do
   DepositHistory.create!(
     money_account_id: i,
     ammount: 10
