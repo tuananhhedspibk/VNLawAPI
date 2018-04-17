@@ -24,7 +24,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
     render json: {
       user_info: {
         email: user.email,
-        profile: user.profile.as_json(only: [:displayName, :avatar]),
+        profile: user.profile.as_json(only: [:displayName, :avatar, :birthday]),
         status: user.status,
         role: user.role.name,
         mn_acc: acc.as_json(only: [:ammount, :updated_at])
