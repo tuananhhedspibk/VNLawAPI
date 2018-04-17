@@ -15,6 +15,8 @@ Rails.application.routes.draw do
           get "/search/top_lawyers", to: "search_lawyers#top_lawyers"
           get "/search/lawyers_names", to: "search_lawyers#index_names"
 
+          resources :articles, only: [:show, :index],
+            :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ }
           resources :users, only: [:show, :update],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
               resources :deposit_histories, only: [:index, :create]
