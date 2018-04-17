@@ -35,14 +35,32 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
   attr_reader :room, :rooms, :user
 
   def response_rooms_idx
+    data = []
+    rooms.each do |room|
+      lawyer = {
+        id: room.lawyer.id,
+        uid: room.lawyer.user_id,
+        status: room.lawyer.user.status,
+        displayName: room.lawyer.profile.displayName,
+        avatar: room.lawyer.profile.avatar,
+        userName: room.lawyer.profile.userName
+      }
+      user = {
+        uid: room.user.id,
+        status: room.user.status,
+        displayName: room.user.profile.displayName,
+        avatar: room.user.profile.avatar,
+        userName: room.user.profile.userName
+      }
+      obj = {
+        id: room.id,
+        lawyer: lawyer,
+        user: user
+      }
+      data << obj
+    end
     render json: {
-      rooms: rooms.as_json(only: :id,
-        :include => {
-          :lawyer => {:only => [:id, :user_id],
-            :include => {:profile => {only: [:displayName, :avatar]}}},
-          :user => {:only => [:id, :status],
-            :include => {:profile => {only: [:displayName, :avatar, :userName]}}}
-        })
+      rooms: data
     }, status: :ok
   end
 

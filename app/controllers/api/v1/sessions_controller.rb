@@ -33,7 +33,7 @@ class Api::V1::SessionsController < Devise::SessionsController
         displayName: user.profile.displayName,
         role: user.role.name,
         lawyer_id: user.lawyer.id,
-        avatar: user.profile.avatar.url
+        avatar: user.profile.avatar
       }, status: :ok
     else
       render json: {
@@ -43,7 +43,7 @@ class Api::V1::SessionsController < Devise::SessionsController
         userName: user.profile.userName,
         displayName: user.profile.displayName,
         role: user.role.name,
-        avatar: user.profile.avatar.url
+        avatar: user.profile.avatar
       }, status: :ok
     end
   end
