@@ -14,6 +14,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
       lawyer.rooms.each do |room|
         username = room.user.profile.displayName
         tasks_list = room.tasks.as_json(only: [:content, :status, :updated_at])
+        authorize! :read, tasks_list.first
         room_val = {
           "id": room.id,
           "targetUser": username,
