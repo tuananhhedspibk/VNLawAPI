@@ -48,12 +48,14 @@ class Article < ApplicationRecord
           title: {
             type: "text",
             index: "true",
-            boost: 10
+            boost: 10,
+            analyzer: "vnanalysis"
           },
           content: {
             type: "text",
             index: "true",
-            boost: 10
+            boost: 10,
+            analyzer: "vnanalysis"
           },
           index_html: {
             type: "text",
