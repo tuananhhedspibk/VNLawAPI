@@ -1,4 +1,6 @@
-class Api::V1::DepositHistoriessController < Api::V1::ApplicationController
+class Api::V1::DepositHistoriesController < Api::V1::ApplicationController
+  acts_as_token_authentication_handler_for User
+
   before_action :find_profile
   before_action :find_acc
 
@@ -11,7 +13,11 @@ class Api::V1::DepositHistoriessController < Api::V1::ApplicationController
   def create
     @dep = DepositHistory.new deposit_history_params
 
-    if dep.save ? response_create_success : response_create_failed
+    if dep.save
+      response_create_success
+    else
+      response_create_failed
+    end
   end
 
   private
@@ -19,12 +25,12 @@ class Api::V1::DepositHistoriessController < Api::V1::ApplicationController
   attr_reader :profile, :acc, :dep
 
   def find_acc
-    @acc = MoneyAccount.find_by pid: profile.id
-    authorized! :read, acc
+    @acc = MoneyAccount.find_by profile_id: profile.id
+    authorize! :read, acc
   end
 
   def find_profile
-    @profile = Profile.find_by userName: params[:user_name]
+    @profile = Profile.find_by user_id: params[:user_id]
     return if profile
     render json: {
       message: I18n.t("app.api.messages.not_found",

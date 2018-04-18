@@ -55,7 +55,8 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
       obj = {
         id: room.id,
         lawyer: lawyer,
-        user: user
+        user: user,
+        description: room.description
       }
       data << obj
     end
