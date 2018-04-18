@@ -107,7 +107,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
 
   def get_task
     @task = Task.find_by id: params[:id]
-    return if task && task.room_id == params[:room_id]
+    return if task && task.room_id.to_s == params[:room_id]
     render json: {
       message: I18n.t("app.api.messages.not_found",
         authentication_keys: "task")

@@ -1,5 +1,7 @@
-class Api::V1::CheckdepositController < ApplicationController
-	def index
+class Api::V1::CheckdepositController < Api::V1::ApplicationController
+    acts_as_token_authentication_handler_for User
+
+	def show
 		checkURL = 'vpc_AdditionData='+params[:vpc_AdditionData] + '&vpc_Amount='+params[:vpc_Amount]+
 				'&vpc_Command='+params[:vpc_Command]+
 				'&vpc_CurrencyCode='+params[:vpc_CurrencyCode]+'&vpc_Locale=' + params[:vpc_Locale]+
@@ -22,22 +24,20 @@ class Api::V1::CheckdepositController < ApplicationController
     	uid = ''
     	if deposit
     		trueSecretKey = true;
-    		if deposit.amount.to_s == params[:vpc_Amount]
+    		if (deposit.amount*100).to_s == params[:vpc_Amount]
     			trueAmount = true
     		end
     		uid = deposit.user_id
     		notDone = !deposit.done
-    		if notDone
-    			deposit.update_attributes(done: true)
-    		end
     	end
         if trueData && trueSecretKey && trueAmount && notDone
+            deposit.update_attributes(done: true)
             dep = DepositHistory.new
-            dep.money_account_id = User.find(uid).money_account.money_account_id
-            dep.ammount = params[:vpc_Amount].to_i
+            dep.money_account_id = User.find(uid).money_account.id
+            dep.ammount = (params[:vpc_Amount].to_i)/100
             dep.save
             current_balance = current_user.money_account.ammount
-            current_user.money_account.update_attributes(ammount: current_balance + params[:vpc_Amount].to_i)
+            current_user.money_account.update_attributes(ammount: current_balance + params[:vpc_Amount].to_i/100)
         end
 		render json: {
    			true: (trueData && trueSecretKey && trueAmount && notDone),

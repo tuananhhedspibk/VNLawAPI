@@ -13,4 +13,5 @@ class Profile < ApplicationRecord
 
   # searchkick word_start: [:displayName], suggest: [:displayName],
   #   batch_size: 50
+  
 end
