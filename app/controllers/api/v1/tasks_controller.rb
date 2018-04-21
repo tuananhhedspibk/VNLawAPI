@@ -13,8 +13,8 @@ class Api::V1::TasksController < Api::V1::ApplicationController
       @tasks = []
       lawyer.rooms.each do |room|
         username = room.user.profile.displayName
-        tasks_list = room.tasks.as_json(only: [:content, :status, :updated_at])
-        authorize! :read, tasks_list.first
+        authorize! :read, room.tasks.first
+        tasks_list = room.tasks.as_json(only: [:room_id, :content, :status, :updated_at])
         room_val = {
           "id": room.id,
           "targetUser": username,
@@ -128,7 +128,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
     return if lawyer
     render json: {
       message: I18n.t("app.api.messages.not_found",
-        authentication_keys: "room")
+        authentication_keys: "lawyer")
     }, status: :not_found
   end
 

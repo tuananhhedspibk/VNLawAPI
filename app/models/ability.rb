@@ -17,10 +17,6 @@ class Ability
       can :read, [User, Profile, Lawyer, Review, Role, UserRole]
       can :update, Profile, user_id: user_id
       can :update, User, id: user_id
-
-      can :read, Payment do |payment|
-        room_ids.include? payment.room_id
-      end
       
       can :read, MoneyAccount, id: acc_id
       can :read, DepositHistory, money_account_id: acc_id

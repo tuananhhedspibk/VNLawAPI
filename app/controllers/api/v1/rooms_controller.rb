@@ -1,13 +1,15 @@
 class Api::V1::RoomsController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User
 
-  before_action :find_room, only: :update
+  before_action :find_room, only: [:update, :show]
   before_action :load_object, only: [:index, :create]
   before_action :check_user_id, only: :create
 
   def index
     @rooms = user.rooms
-    authorize! :read, rooms.first
+    if (rooms.length > 0)
+      authorize! :read, rooms.first
+    end
 
     response_rooms_idx
   end
@@ -28,6 +30,12 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     authorize! :update, room
     return response_update_success if room.update_attributes room_update_params
     response_update_failed
+  end
+
+  def show
+    render json: {
+      room: room
+    }, status: :ok
   end
 
   private

@@ -51,7 +51,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             suggest: false,
             lawyers: @lawyers_elastic[(current_page - 1) * 6, 6]
               .as_json(:include => {:specializations => {only: :name},
-                :profile => {only: [:displayName, :avatar]}},
+                :profile => {only: [:displayName, :avatar, :userName]}},
                 only: [:intro, :rate, :price])
           }, status: :ok
         else
@@ -62,7 +62,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             suggest: false,
             lawyers: lawyers[(current_page - 1) * 6, 6]
               .as_json(:include => {:specializations => {only: :name},
-                :profile => {only: [:displayName, :avatar]}},
+                :profile => {only: [:displayName, :avatar, :userName]}},
                 only: [:intro, :rate, :price])
           }, status: :ok
         end
