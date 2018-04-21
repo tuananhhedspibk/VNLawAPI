@@ -79,17 +79,6 @@ ActiveRecord::Schema.define(version: 20180422070206) do
     t.index ["profile_id"], name: "index_money_accounts_on_profile_id"
   end
 
-  create_table "payments", force: :cascade do |t|
-    t.bigint "room_id"
-    t.datetime "startTime"
-    t.datetime "endTime"
-    t.integer "ammount"
-    t.boolean "paid", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["room_id"], name: "index_payments_on_room_id"
-  end
-
   create_table "profiles", force: :cascade do |t|
     t.string "user_id"
     t.string "userName"
@@ -186,7 +175,6 @@ ActiveRecord::Schema.define(version: 20180422070206) do
   add_foreign_key "lawyer_specializes", "specializations"
   add_foreign_key "lawyers", "users"
   add_foreign_key "money_accounts", "profiles"
-  add_foreign_key "payments", "rooms"
   add_foreign_key "profiles", "users"
   add_foreign_key "reviews", "lawyers"
   add_foreign_key "reviews", "users"
