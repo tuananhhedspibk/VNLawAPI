@@ -56,10 +56,17 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
 
   def search_articles
     query = "*"
+    @query_group3 = {}
     if params[:query] && params[:query].length > 0
       query = params[:query]
     end
 
+    if params[:group3_1]
+      @query_group3 = {agency_issued: params[:group3_1]}
+    elsif params[:group3_2]
+      @query_group3 = {article_type: params[:group3_2]}
+    end
+    
     if params[:group1] == I18n.t("app.search_box.filter.filter_1")
       @articles = search_match_phrase query
     elsif params[:group1] == I18n.t("app.search_box.filter.filter_2")
@@ -75,28 +82,32 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
   def search_match_phrase query
     if params[:group2_1] == I18n.t("app.search_box.filter.filter_3")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
-        @articles = Article.search query,
+        @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           order: {public_day: :desc}
       else
-        @articles = Article.search query,
+        @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           order: {public_day: :asc}
       end
-    else
+    elsif params[:group2_1] == I18n.t("app.search_box.filter.filter_6")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
-        @articles = Article.search query,
+        @articles = Article.search query, where: @query_group3, match: :phrase,
           select: [:id, :title, :public_day,:article_type, :numerical_symbol,
             :effect_day, :effect_status],
           order: {effect_day: :desc}
       else
-        @articles = Article.search query,
+        @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           order: {effect_day: :asc}
       end
+    else
+      @articles = Article.search query ,where: @query_group3 , match: :phrase,
+          select: [:id, :title, :public_day, :article_type, :numerical_symbol,
+            :effect_day, :effect_status]
     end
     return @articles
   end
@@ -104,28 +115,32 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
   def search_match_word query
     if params[:group2_1] == I18n.t("app.search_box.filter.filter_3")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
-        @articles = Article.search query, operator: "or",
+        @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           match: :word, order: {public_day: :desc}
       else
-        @articles = Article.search query,
+        @articles = Article.search query, where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           match: :word, order: {public_day: :asc}, operator: "or"
       end
-    else
+    elsif params[:group2_1] == I18n.t("app.search_box.filter.filter_6")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
-        @articles = Article.search query, operator: "or",
+        @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           match: :word, order: {effect_day: :desc}
       else
-        @articles = Article.search query, operator: "or",
+        @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
           match: :word, order: {effect_day: :asc}
       end
+    else
+      @articles = Article.search query, operator: "or", where: @query_group3,
+          select: [:id, :title, :public_day, :article_type, :numerical_symbol,
+            :effect_day, :effect_status]
     end
     return @articles
   end
