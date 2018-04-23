@@ -15,7 +15,7 @@ class Api::V1::TasksController < Api::V1::ApplicationController
         if room.tasks.length > 0
           username = room.user.profile.displayName
           authorize! :read, room.tasks.first
-          tasks_list = room.tasks.as_json(except: :created_at)
+          tasks_list = room.tasks.as_json(except: [:created_at, :room_id])
           room_val = {
             "id": room.id,
             "targetUser": username,
