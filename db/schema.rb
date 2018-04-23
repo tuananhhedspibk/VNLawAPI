@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180422070205) do
+ActiveRecord::Schema.define(version: 20180422070206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(version: 20180422070205) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["money_account_id"], name: "index_deposit_histories_on_money_account_id"
+  end
+
+  create_table "deposits", force: :cascade do |t|
+    t.string "user_id"
+    t.string "refcode"
+    t.boolean "done"
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_deposits_on_user_id"
   end
 
   create_table "lawyer_specializes", force: :cascade do |t|
@@ -67,17 +77,6 @@ ActiveRecord::Schema.define(version: 20180422070205) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["profile_id"], name: "index_money_accounts_on_profile_id"
-  end
-
-  create_table "payments", force: :cascade do |t|
-    t.bigint "room_id"
-    t.datetime "startTime"
-    t.datetime "endTime"
-    t.integer "ammount"
-    t.boolean "paid", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["room_id"], name: "index_payments_on_room_id"
   end
 
   create_table "profiles", force: :cascade do |t|
@@ -171,11 +170,11 @@ ActiveRecord::Schema.define(version: 20180422070205) do
   end
 
   add_foreign_key "deposit_histories", "money_accounts"
+  add_foreign_key "deposits", "users"
   add_foreign_key "lawyer_specializes", "lawyers"
   add_foreign_key "lawyer_specializes", "specializations"
   add_foreign_key "lawyers", "users"
   add_foreign_key "money_accounts", "profiles"
-  add_foreign_key "payments", "rooms"
   add_foreign_key "profiles", "users"
   add_foreign_key "reviews", "lawyers"
   add_foreign_key "reviews", "users"

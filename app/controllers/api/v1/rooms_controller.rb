@@ -1,13 +1,15 @@
 class Api::V1::RoomsController < Api::V1::ApplicationController
   acts_as_token_authentication_handler_for User
 
-  before_action :find_room, only: :update
+  before_action :find_room, only: [:update, :show]
   before_action :load_object, only: [:index, :create]
   before_action :check_user_id, only: :create
 
   def index
     @rooms = user.rooms
-    authorize! :read, rooms.first
+    if (rooms.length > 0)
+      authorize! :read, rooms.first
+    end
 
     response_rooms_idx
   end
@@ -30,19 +32,44 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     response_update_failed
   end
 
+  def show
+    render json: {
+      room: room
+    }, status: :ok
+  end
+
   private
 
   attr_reader :room, :rooms, :user
 
   def response_rooms_idx
+    data = []
+    rooms.each do |room|
+      lawyer = {
+        id: room.lawyer.id,
+        uid: room.lawyer.user_id,
+        status: room.lawyer.user.status,
+        displayName: room.lawyer.profile.displayName,
+        avatar: room.lawyer.profile.avatar,
+        userName: room.lawyer.profile.userName
+      }
+      user = {
+        uid: room.user.id,
+        status: room.user.status,
+        displayName: room.user.profile.displayName,
+        avatar: room.user.profile.avatar,
+        userName: room.user.profile.userName
+      }
+      obj = {
+        id: room.id,
+        lawyer: lawyer,
+        user: user,
+        description: room.description
+      }
+      data << obj
+    end
     render json: {
-      rooms: rooms.as_json(only: :id,
-        :include => {
-          :lawyer => {:only => [:id, :user_id],
-            :include => {:profile => {only: [:displayName, :avatar]}}},
-          :user => {:only => [:id, :status],
-            :include => {:profile => {only: [:displayName, :avatar, :userName]}}}
-        })
+      rooms: data
     }, status: :ok
   end
 

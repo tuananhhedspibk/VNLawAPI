@@ -10,8 +10,3 @@ test:
   <<: *default
   database: VNLaw_test
 
-production:
-  <<: *default
-  database: VNLaw_production
-  username: VNLaw
-password: <%= ENV['VNLAW_DATABASE_PASSWORD'] %>

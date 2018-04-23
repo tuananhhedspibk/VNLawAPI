@@ -65,7 +65,7 @@ class Api::V1::ReviewsController < Api::V1::ApplicationController
   def response_all_reviews
     render json: {
       reviews: lawyer.reviews.as_json(except:
-        [:user_id, :lawyer_id, :created_at])
+        [:lawyer_id, :created_at])
     }, status: :ok
   end
 

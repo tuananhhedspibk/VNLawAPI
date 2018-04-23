@@ -14,7 +14,15 @@ Rails.application.routes.draw do
           get "/search/lawyers", to: "search_lawyers#index"
           get "/search/top_lawyers", to: "search_lawyers#top_lawyers"
           get "/search/lawyers_names", to: "search_lawyers#index_names"
+          get "/search/articles", to: "search_articles#index"          
 
+          post "/deposits", to: "deposits#create"
+          get "/checkdeposit", to: "checkdeposit#show"
+          get "/money_account", to: "money_accounts#show"
+          patch "/money_account", to: "money_accounts#update"
+
+          resources :articles, only: [:show, :index],
+            :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ }
           resources :users, only: [:show, :update],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
               resources :deposit_histories, only: [:index, :create]
@@ -26,11 +34,10 @@ Rails.application.routes.draw do
           end
           resources :lawyer_specializes, only: [:destroy, :create]
           resources :reviews, only: [:create, :update]
-          resources :rooms, only: [:index, :create, :update],
-            :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ } do
-              resources :tasks, only: [:index, :create, :update, :destroy]
-              resources :payments, only: [:index, :update, :create]
-              resources :room_files, only: :index
+          resources :rooms, only: [:show, :index, :create, :update] do
+            resources :tasks, only: [:index, :create, :update, :destroy]
+            resources :payments, only: [:index, :update, :create]
+            resources :room_files, only: :index
           end
           resources :room_files, only: :create
         end

@@ -7,6 +7,7 @@ en:
       messages:
         invalid_token: "Invalid token"
         not_authorized: "Not authorized"
+        not_have_permission_view: "Not have permission to view"
         not_have_permission_create: "Not have permission to create %{authentication_keys}"
         not_have_permission_update: "Not have permission to update %{authentication_keys}"
         not_have_permission_destroy: "Not have permission to destroy %{authentication_keys}"
@@ -17,6 +18,7 @@ en:
         destroy_success: "Delete %{authentication_keys} success"
         destroy_failed: "Delete %{authentication_keys} failed"
         not_found: "%{authentication_keys} not found"
+        wrong_id: "Wrong %{authentication_keys} id"
         users:
           sign_up_success: "Sign up success"
           sign_up_fail: "Sign up failed"
