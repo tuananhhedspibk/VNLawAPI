@@ -12,15 +12,17 @@ class Api::V1::TasksController < Api::V1::ApplicationController
     elsif lawyer
       @tasks = []
       lawyer.rooms.each do |room|
-        username = room.user.profile.displayName
-        authorize! :read, room.tasks.first
-        tasks_list = room.tasks.as_json(only: [:room_id, :content, :status, :updated_at])
-        room_val = {
-          "id": room.id,
-          "targetUser": username,
-          "tasks": tasks_list
-        }
-        tasks << room_val
+        if room.tasks.length > 0
+          username = room.user.profile.displayName
+          authorize! :read, room.tasks.first
+          tasks_list = room.tasks.as_json(except: :created_at)
+          room_val = {
+            "id": room.id,
+            "targetUser": username,
+            "tasks": tasks_list
+          }
+          tasks << room_val
+        end
       end
     end
     response_task_idx
