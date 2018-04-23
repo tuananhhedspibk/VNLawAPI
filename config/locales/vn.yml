@@ -31,6 +31,8 @@ vn:
         filter_2: "Có tất cả từ trên"
         filter_3: "Ngày phát hành"
         filter_4: "Mới tới cũ"
+        filter_5: "Chính xác nhất"
+        filter_6: "Ngày có hiệu lực"
     attorney:
       sort_by_rate: "Xếp hạng"
       sort_by_cost: "Phí tư vấn"

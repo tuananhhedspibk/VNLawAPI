@@ -30,6 +30,8 @@ en:
         filter_2: "Have all of the above"
         filter_3: "Release date"
         filter_4: "New to the old"
+        filter_5: "The most exactly"
+        filter_6: "Effect day"
     attorney:
       sort_by_rate: "Rate"
       sort_by_cost: "Cost"
