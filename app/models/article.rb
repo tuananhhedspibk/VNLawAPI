@@ -28,16 +28,19 @@ class Article < ApplicationRecord
   has_many :neighbors, through: :article_neighbor,
     source: :neighbor
 
-  searchkick batch_size: 200, merge_mappings: true,
+  searchkick  index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued, :public_day],
     settings: {
-      analysis: {
-        analyzer: {
-          vnanalysis: {
-            tokenizer: "vi_tokenizer",
-            char_filter:  [ "html_strip" ],
-            filter: [
-              "icu_folding"
-            ]
+      index: {
+        analysis: {
+          analyzer: {
+            vnanalysis: {
+              type: "custom",
+              tokenizer: "vi_tokenizer",
+              char_filter:  [ "html_strip" ],
+              filter: [
+                "icu_folding"
+              ]
+            }
           }
         }
       }
@@ -47,31 +50,52 @@ class Article < ApplicationRecord
         properties: {
           title: {
             type: "text",
-            index: "true",
-            boost: 10,
+            index: true,
+            boost: 8,
             analyzer: "vnanalysis"
           },
           content: {
             type: "text",
-            index: "true",
-            boost: 10,
+            index: true,
+            boost: 2,
             analyzer: "vnanalysis"
           },
-          index_html: {
+          numerical_symbol: {
             type: "text",
-            index: "true"
+            boost: 10,
+            index: true
           },
-          full_html: {
+          id: {
             type: "text",
-            index: "true"
+            boost: 0,
+            index: true
           },
-          public_day: {
+          effect_day: {
             type: "date",
-            index: "true"
+            boost: 0,
+            index: true
+          },
+          effect_status: {
+            type: "text",
+            boost: 0,
+            index: true
           }
         }
       }
     }
+  def search_data
+    {
+      id: id,
+      title: title,
+      content: content,
+      numerical_symbol: numerical_symbol,
+      public_day: public_day,
+      article_type: article_type,
+      effect_day: effect_day,
+      agency_issued: agency_issued,
+      effect_status: effect_status
+    }
+  end
 
   class << self
     def filter_by_type opts = {}
