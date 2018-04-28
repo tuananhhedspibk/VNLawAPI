@@ -36,7 +36,6 @@ Rails.application.routes.draw do
           resources :reviews, only: [:create, :update]
           resources :rooms, only: [:show, :index, :create, :update] do
             resources :tasks, only: [:index, :create, :update, :destroy]
-            resources :payments, only: [:index, :update, :create]
             resources :room_files, only: :index
           end
           resources :room_files, only: :create

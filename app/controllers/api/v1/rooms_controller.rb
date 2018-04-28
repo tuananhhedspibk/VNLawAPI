@@ -92,7 +92,7 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     render json: {
       message: I18n.t("app.api.messages.create_success",
         authentication_keys: "room"),
-      room: room.as_json(except: [:user_id, :lawyer_id],
+      room: room.as_json(except: [:user_id, :lawyer_id, :updated_at],
         :include => {
           :user => {
             :only => :id,
