@@ -12,8 +12,6 @@ class Api::V1::CheckdepositController < Api::V1::ApplicationController
     	hashcode = OpenSSL::HMAC.hexdigest('SHA256', [hashCode].pack('H*'), checkURL)
     	hashcode = hashcode.upcase
     	trueData = false
-    	print hashcode +"\n"
-    	print params[:vpc_SecureHash] + "\n"
     	if (hashcode == params[:vpc_SecureHash])
     		trueData = true
     	end
