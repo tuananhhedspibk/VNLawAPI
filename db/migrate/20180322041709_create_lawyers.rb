@@ -11,6 +11,8 @@ class CreateLawyers < ActiveRecord::Migration[5.1]
       t.integer :price
       t.integer :exp
       t.float :rate
+      t.integer :votes
+      t.float :wr, default: -10
       t.text :workPlace
 
       t.timestamps
