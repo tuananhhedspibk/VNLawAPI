@@ -174,7 +174,8 @@ for i in (0..27) do
       certificate: price,
       education: Faker::HarryPotter.house,
       exp: rate,
-      votes: votes
+      votes: votes,
+      workPlace: Faker::HarryPotter.house
     )
 
     UserRole.create!(
