@@ -65,6 +65,8 @@ ActiveRecord::Schema.define(version: 20180422070206) do
     t.integer "price"
     t.integer "exp"
     t.float "rate"
+    t.integer "votes"
+    t.float "wr", default: -10.0
     t.text "workPlace"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

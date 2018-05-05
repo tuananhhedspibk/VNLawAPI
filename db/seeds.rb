@@ -123,6 +123,7 @@ for i in (0..17) do
   if i >= 4
     rate = random.rand(1..5)
     price = random.rand(100000..200000)
+    votes = random.rand(8..15)
 
     Lawyer.create!(
       user_id: user_ids[i],
@@ -133,7 +134,8 @@ for i in (0..17) do
       cardNumber: rate,
       certificate: price,
       education: Faker::HarryPotter.house,
-      exp: rate
+      exp: rate,
+      votes: votes
     )
 
     UserRole.create!(
@@ -209,3 +211,17 @@ end
 
 ContentType.create! name: "File"
 ContentType.create! name: "Image"
+
+m = 10
+c = Review.average :star
+
+Lawyer.all.each do |lawyer|
+  if lawyer.votes >= m
+    r = lawyer.rate
+    v = lawyer.votes
+
+    wr = (v.to_f / (v + m).to_f) * r + (m.to_f / (v + m).to_f) * c
+    
+    lawyer.update_attributes wr: wr
+  end
+end

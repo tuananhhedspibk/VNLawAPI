@@ -11,17 +11,24 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
       lawyersCount = lawyers.total_entries
       lawyers.hits.each do |lawyer|
         profile = Profile.find_by id: lawyer["_id"]
-        @lawyers_elastic << Lawyer.find_by(user_id: profile.user_id)
+        lawyer_tmp = Lawyer.find_by(user_id: profile.user_id)
+        if lawyer_tmp != nil
+          @lawyers_elastic << lawyer_tmp
+        else
+          lawyersCount -= 1
+        end
       end
       if params[:sort_by] && params[:sort_by].length > 0
         order_by = ""
         order_by = get_order_by
         if order_by == :rate
-          @lawyers_elastic.sort_by! &:rate
+          @lawyers_elastic = sort_lawyers_by_rate @lawyers_elastic
         elsif order_by == :price
           @lawyers_elastic.sort_by! &:price
+          @lawyers_elastic.reverse!
         end
-        @lawyers_elastic.reverse!
+      else
+        @lawyers_elastic = sort_lawyers_by_rate @lawyers_elastic
       end
     else
       lawyersCount = lawyers.count
@@ -122,18 +129,24 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
   end
 
   def top_lawyers
-    @top_lawyers = Lawyer.order(rate: :desc).limit(5)
+    @top_lawyers = sort_lawyers_by_rate Lawyer.all
     if @top_lawyers
       @top_lawyers_infor = []
+      l_ct = 0
       @top_lawyers.each do |lawyer|
-        infor = {}
-        infor["fb_id"] = lawyer.user_id
-        infor["displayName"] = lawyer.profile.displayName
-        infor["avatar"] = lawyer.profile.avatar
-        infor["intro"] = lawyer.intro
-        infor["price"] = lawyer.price
-        infor["userName"] = lawyer.profile.userName
-        top_lawyers_infor << infor
+        if l_ct < 5
+          infor = {}
+          infor["fb_id"] = lawyer.user_id
+          infor["displayName"] = lawyer.profile.displayName
+          infor["avatar"] = lawyer.profile.avatar
+          infor["intro"] = lawyer.intro
+          infor["price"] = lawyer.price
+          infor["userName"] = lawyer.profile.userName
+          top_lawyers_infor << infor
+          l_ct += 1
+        else
+          break
+        end
       end
       render json: {
         top_lawyers: top_lawyers_infor
@@ -185,6 +198,21 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
     return order_by
   end
 
+  def sort_lawyers_by_rate lawyers
+    lawyer_with_wr = []
+    lawyer_without_wr = []
+    lawyers.each do |lawyer|
+      if lawyer.votes >= 10
+        lawyer_with_wr << lawyer
+      else
+        lawyer_without_wr << lawyer
+      end
+    end
+    lawyer_with_wr = lawyer_with_wr.sort_by(&:wr).reverse
+    lawyer_without_wr = lawyer_without_wr.sort_by(&:rate).reverse
+    return lawyer_with_wr + lawyer_without_wr
+  end
+
   def search_lawyers
     order_by = ""
     if params[:sort_by] && params[:sort_by].length > 0
@@ -194,10 +222,10 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
       @lawyers = Profile.search params[:name], fields: [:displayName],
         suggest: true, match: :phrase
     else
-      if params[:sort_by] && params[:sort_by].length > 0
+      if params[:sort_by] && order_by == :price
         @lawyers = Lawyer.all.order(order_by => :desc)
       else
-        @lawyers = Lawyer.all.order(rate: :desc)
+        @lawyers = sort_lawyers_by_rate Lawyer.all
       end   
     end
   end
