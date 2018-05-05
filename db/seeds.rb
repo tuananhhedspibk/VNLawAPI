@@ -21,6 +21,16 @@ api_hash_val = Digest::SHA256.hexdigest "b1c7f840acdee887f402236e82736eba"
 ApiKey.create! access_token: api_hash_val
 
 user_ids = [
+  "dKps38BvCEZKi2hSD8SMPsIkwaG3",
+  "uCdIQqxgEVY8dE9mewJtozcxVph1",
+  "EZAyYFJWSTWQbRPt5q350pnUugW2",
+  "tzQTJ0baqOhDJSG1hxVZvtGB8Zo1",
+  "vy30XJGmlkcuz8V9YUrUZ30lWRn2",
+  "jHBATXUXEEZnrxfksIsuUefLF122",
+  "Kj9cmlBfIWOM8skWGulIYoUcAQ92",
+  "ZhFoP5EjVONca1JdPDSwbnHpPNR2",
+  "5rPV0jfLNCTbWfzKyjbzYwVAIOs1",
+  "txG6UloI1VhM5L0RI3IuNpGQeCr2",
   "4kZrOPnlFHcBGqDx89AunPHg9EQ2",
   "Alz8dRGl23gZASPdeSLsqSxBF1k1",
   "0K0a7kCxqhSfKN5iJ1oNiLShqSt1",
@@ -42,6 +52,16 @@ user_ids = [
 ]
 
 user_names = [
+  "wenger1.1511420786900",
+  "wenger2.1511420786901",
+  "wenger3.1511420786902",
+  "wenger4.1511420786903",
+  "wenger5.1511420786904",
+  "wenger6.1511420786905",
+  "wenger7.1511420786906",
+  "wenger8.1511420786907",
+  "wenger9.1511420786908",
+  "wenger10.1511420786909",
   "testnotifi.1511420786026",
   "light.1516676291611",
   "linhtm.1509005103447",
@@ -63,6 +83,16 @@ user_names = [
 ]
 
 user_emails = [
+  "wenger1@gmail.com",
+  "wenger2@gmail.com",
+  "wenger3@gmail.com",
+  "wenger4@gmail.com",
+  "wenger5@gmail.com",
+  "wenger6@gmail.com",
+  "wenger7@gmail.com",
+  "wenger8@gmail.com",
+  "wenger9@gmail.com",
+  "wenger10@gmail.com",
   "testnotifi@gmail.com",
   "light@gmail.com",
   "linhtm@gmail.com",
@@ -84,6 +114,16 @@ user_emails = [
 ]
 
 display_names = [
+  "Wenger1",
+  "Wenger2",
+  "Wenger3",
+  "Wenger4",
+  "Wenger5",
+  "Wenger6",
+  "Wenger7",
+  "Wenger8",
+  "Wenger9",
+  "Wenger10",
   "testnotifi",
   "Yagami Light",
   "Trần Mạnh Linh",
@@ -104,7 +144,7 @@ display_names = [
   "Doãn Minh Phúc"
 ]
 
-for i in (0..17) do
+for i in (0..27) do
   au_tk = User.generate_unique_secure_token
 
   User.create!(
@@ -120,15 +160,14 @@ for i in (0..17) do
     displayName: display_names[i]
   )
 
-  if i >= 4
+  if i >= 14
     rate = random.rand(1..5)
     price = random.rand(100000..200000)
-    votes = random.rand(8..15)
+    votes = random.rand(8..14)
 
     Lawyer.create!(
       user_id: user_ids[i],
       intro: Faker::HarryPotter.quote,
-      rate: rate,
       price: price,
       achievement: Faker::HarryPotter.quote,
       cardNumber: rate,
@@ -151,7 +190,7 @@ for i in (0..17) do
 end
 
 
-for i in (1..13) do
+for i in (1..14) do
   old_sp_id = [-1]
   sp_id = -1
   for j in (1..3)
@@ -166,26 +205,30 @@ for i in (1..13) do
   end
 end
 
-for i in (0..3) do
-  for j in (1..14) do
+Lawyer.all.each do |lawyer|
+  old_user_id = [-1]
+  user_id_idx = -1
+  sum_star = 0
+  for i in (1..lawyer.votes) do
+    star = random.rand(1..5)
+    sum_star += star
+    while old_user_id.include? user_id_idx do
+      user_id_idx = random.rand(0..13)
+    end
+    old_user_id << user_id_idx
     Review.create!(
-      lawyer_id: j,
-      user_id: user_ids[i],
-      content: Faker::HarryPotter.book,
-      star: random.rand(1..5)
+      user_id: user_ids[user_id_idx],
+      lawyer_id: lawyer.id,
+      content: Faker::HarryPotter.quote,
+      star: star
     )
-  end
-end
-
-
-for i in (0..3) do
-  for j in (1..3) do
     Room.create!(
-      lawyer_id: j,
-      user_id: user_ids[i],
+      lawyer_id: lawyer.id,
+      user_id: user_ids[user_id_idx],
       description: Faker::HarryPotter.house
     )
   end
+  lawyer.update_attributes rate: (sum_star.to_f / lawyer.votes.to_f)
 end
 
 for i in (1..12) do

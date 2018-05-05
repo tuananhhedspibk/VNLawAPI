@@ -59,7 +59,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             lawyers: @lawyers_elastic[(current_page - 1) * 6, 6]
               .as_json(:include => {:specializations => {only: :name},
                 :profile => {only: [:displayName, :avatar, :userName]}},
-                only: [:intro, :rate, :price])
+                only: [:intro, :rate, :price, :votes])
           }, status: :ok
         else
           render json: {
@@ -70,7 +70,7 @@ class Api::V1::SearchLawyersController < Api::V1::ApplicationController
             lawyers: lawyers[(current_page - 1) * 6, 6]
               .as_json(:include => {:specializations => {only: :name},
                 :profile => {only: [:displayName, :avatar, :userName]}},
-                only: [:intro, :rate, :price])
+                only: [:intro, :rate, :price, :votes])
           }, status: :ok
         end
       else
