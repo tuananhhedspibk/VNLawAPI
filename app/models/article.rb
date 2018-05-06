@@ -28,7 +28,8 @@ class Article < ApplicationRecord
   has_many :neighbors, through: :article_neighbor,
     source: :neighbor
 
-  searchkick  index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued, :public_day],
+  searchkick  callbacks: false,
+    index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued, :public_day],
     settings: {
       index: {
         analysis: {

@@ -29,14 +29,20 @@ class Definitionresult < ApplicationRecord
   end
 
   def self.getDef
-    definitions = Definitionresult.where global_def: true
+    definitions = Definitionresult.where(global_def: true)
     definitions.each do |x|
       x.sentence.gsub! '_', ' '
       x.sentence.gsub! '*', ' '
       x.concept.gsub! '_', ' '
       x.concept.gsub! '*', ' '
-      x.concept = (' ' + x.concept.strip + ' ').downcase 
-      x.sentence = '<a href="#" data-toggle="popover" data-trigger="hover" data-content="'+x.sentence+'">'+x.concept+'</a>'
+      x.concept.gsub! '"', ' '
+      x.concept.gsub! '“', ' '
+      x.concept.gsub! '”', ' '
+      x.sentence.gsub! '"', ' '
+      x.sentence.gsub! '“', ' '
+      x.sentence.gsub! '”', ' '
+      x.concept = (x.concept.strip).downcase 
+      x.sentence = '<a href="#" class="definition-popover" data-toggle="popover" data-trigger="hover" data-content="'+x.sentence+'">'+x.concept+'</a>'
     end
     definitions
   end
