@@ -6,9 +6,11 @@ class Api::V1::ArticlesController < ApplicationController
       render json: {
         full_html: @article.full_html,
         index_html: @article.index_html,
+        modified_arr: @modified_position,
+        modify_arr: @modifies_position,
         detail: @article.as_json(only: [:title, :numerical_symbol,
           :public_day, :day_report, :article_type, :source, :agency_issued, 
-          :the_signer, :signer_title,:scope,:effect_day, :effect_status ])
+          :the_signer, :signer_title,:scope,:effect_day, :effect_status, :topics] )
       }, status: :ok
     else
       render json: {
@@ -27,7 +29,17 @@ class Api::V1::ArticlesController < ApplicationController
 
   def get_article
     @article = Article.find_by id: params[:id]
-    render_index_html
+    if @article
+      render_index_html
+      @modified_position = Array.new
+      @modifies_position = Array.new
+      if @article.isModifedLaw?
+          insert_html_modified_law
+      end
+      if @article.isLawModify?
+        render_law_modify_json
+      end
+    end
   end
 
   def render_index_html
@@ -84,12 +96,10 @@ class Api::V1::ArticlesController < ApplicationController
         insert_html_law_modify
       end
 
-      if @article.isModifedLaw?
-        insert_html_modified_law
-      end
 
-      @article.update_attributes(full_html: @full_html)
-      @article.update_attributes(index_html: @index_html)
+
+      @article.update_attribute(:full_html, @full_html)
+      @article.update_attribute(:index_html, @index_html)
     end
   end
   
@@ -168,7 +178,7 @@ class Api::V1::ArticlesController < ApplicationController
   end
 
   def reform_html(string)
-    symbol = ['_','*','#','\.']
+    symbol = ['_','*','#']
     symbol.each do |a| 
       string = string.gsub(a,"")
     end
@@ -261,8 +271,8 @@ class Api::V1::ArticlesController < ApplicationController
     pattern = '(\s|&nbsp;| )*(<[^<]+>)(\s|&nbsp;| )*' + convert2regex(string)
     find = (/#{pattern}/m).match(@full_html[@start_index,@full_html.length])
     if find != nil
-      html_insert = '<a name="' + position + '"></a>'
-      @full_html = @full_html[0,@start_index+find.end(0)] + html_insert + @full_html[@start_index + find.end(0),@full_html.length]
+      html_insert = '<a class="article-position" name="' + position + '"></a>'
+      @full_html = @full_html[0,@start_index+find.begin(0)] + html_insert + @full_html[@start_index + find.begin(0),@full_html.length]
       @start_index += find.end(0)
       if style == true
         @index_html +=  '<div class="' + type + '">
@@ -275,42 +285,192 @@ class Api::V1::ArticlesController < ApplicationController
   end
 
   def sumary_to_position(object)
+    part_name = nil
+    chap_name = nil
+    sec_name = nil
+    law_name = nil
+    item_name = nil
+    point_name = nil
     if  object.part_modify_index != nil
       part_index =  object.part_modify_index + 1
+      part = Part.where(law_id: object.modified_law_id, part_index: object.part_modify_index).first
+      if part
+        part_name = part.name_part
+      end
     else 
       part_index = 0
     end
 
     if  object.chap_modify_index != nil
       chap_index =  object.chap_modify_index + 1
+      chap = Chapter.where(law_id: object.modified_law_id, part_index: object.part_modify_index,
+          chap_index: object.chap_modify_index).first
+      if chap.chap_name
+        chap_name = chap.chap_name
+      end
     else 
       chap_index = 0
     end
 
     if  object.sec_modify_index != nil
       sec_index =  object.sec_modify_index + 1
+      sec = Section.where(law_id: object.modified_law_id, part_index: object.part_modify_index,
+          chap_index: object.chap_modify_index, sec_index: object.sec_modify_index ).first
+      if sec.sec_name
+        sec_name = sec.sec_name
+      end
     else 
       sec_index = 0
     end
 
     if  object.law_modify_index != nil
       law_index =  object.law_modify_index + 1
+      law = Law.where(law_id: object.modified_law_id, part_index: object.part_modify_index,
+          chap_index: object.chap_modify_index, sec_index: object.sec_modify_index, law_index: object.law_modify_index ).first
+      if law.law_name
+        law_name = law.law_name
+      end
     else 
       law_index = 0
     end
 
     if  object.item_modify_index != nil
       item_index =  object.item_modify_index + 1
+      item = Item.where(law_id: object.modified_law_id, part_index: object.part_modify_index,chap_index: object.chap_modify_index, 
+        sec_index: object.sec_modify_index, law_index: object.law_modify_index, item_index: object.item_modify_index ).first
+      if item.item_name
+        item_name = 'khoản ' + item.item_name
+      end
     else 
       item_index = 0
     end
 
     if  object.point_modify_index != nil
       point_index =  object.point_modify_index + 1
+      point = Point.where(law_id: object.modified_law_id, part_index: object.part_modify_index,chap_index: object.chap_modify_index, 
+        sec_index: object.sec_modify_index, law_index: object.law_modify_index, item_index: object.item_modify_index, 
+        point_index: object.point_modify_index).first
+      if point.point_name
+        point_name = 'điểm ' + point.point_name
+      end
     else 
       point_index = 0
     end
-    return position = "#{part_index}_#{chap_index}_#{sec_index}_#{law_index}_#{item_index}_#{point_index}"
+    title = [point_name, item_name, law_name,  sec_name, chap_name, part_name].compact.join(' ')
+    position = "#{part_index}_#{chap_index}_#{sec_index}_#{law_index}_#{item_index}_#{point_index}"
+    return position,title
+  end
+
+  def get_next_pst(object)
+    if  object.part_modify_index != nil
+      part_index =  object.part_modify_index
+    else 
+      part_index = nil
+    end
+
+    if  object.chap_modify_index != nil
+      chap_index =  object.chap_modify_index
+    else 
+      chap_index = nil
+    end
+
+    if  object.sec_modify_index != nil
+      sec_index =  object.sec_modify_index
+    else 
+      sec_index = nil
+    end
+
+    if  object.law_modify_index != nil
+      law_index =  object.law_modify_index
+    else 
+      law_index = nil
+    end
+
+    if  object.item_modify_index != nil
+      item_index =  object.item_modify_index
+    else 
+      item_index = nil
+    end
+
+    if  object.point_modify_index != nil
+      point_index =  object.point_modify_index
+    else 
+      point_index = nil
+    end
+    if point_index && Point.exists?(law_id: object.modified_law_id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index, item_index: item_index, point_index: point_index+1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index+1}_#{item_index+1}_#{point_index+2}"
+    end
+    if item_index && Item.exists?(law_id: object.modified_law_id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index, item_index: item_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index+1}_#{item_index + 2}_0"
+    end  
+    if law_index && Law.exists?(law_id: object.modified_law_id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index + 2}_0_0"
+    end
+    if sec_index && Section.exists?(law_id: object.modified_law_id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index + 2}_0_0_0"
+    end
+    if chap_index && Chapter.exists?(law_id: object.modified_law_id, part_index: part_index, chap_index: chap_index + 1)
+      return "#{part_index+1}_#{chap_index + 2}_0_0_0_0"
+    end
+    if part_index && Part.exists?(law_id: object.modified_law_id, part_index: part_index + 1)
+      return "#{part_index + 2}_0_0_0_0_0"
+    end
+    return nil
+  end
+
+  def get_next_post_by_post(object)
+    indexSet = object.split('_')
+    part_index = nil
+    chap_index = nil
+    sec_index = nil
+    law_index = nil
+    item_index = nil
+    point_index = nil
+
+    (1..indexSet.length).each do |x|
+      case x
+        when 1
+          part_index = indexSet[0].to_i == 0? nil : indexSet[0].to_i - 1
+        when 2
+          chap_index = indexSet[1].to_i == 0? nil : indexSet[1].to_i - 1
+        when 3
+          sec_index = indexSet[2].to_i == 0? nil : indexSet[2].to_i - 1
+        when 4
+          law_index = indexSet[3].to_i == 0? nil : indexSet[3].to_i - 1
+        when 5
+          item_index = indexSet[4].to_i == 0? nil : indexSet[4].to_i - 1
+        when 6
+          point_index = indexSet[5].to_i == 0? nil : indexSet[5].to_i - 1
+      end
+    end
+
+    if point_index && Point.exists?(law_id: @article.id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index, item_index: item_index, point_index: point_index+1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index+1}_#{item_index+1}_#{point_index+2}"
+    end
+    if item_index && Item.exists?(law_id: @article.id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index, item_index: item_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index+1}_#{item_index + 2}_0"
+    end  
+    if law_index && Law.exists?(law_id: @article.id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index, law_index: law_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index+1}_#{law_index + 2}_0_0"
+    end
+    if sec_index && Section.exists?(law_id: @article.id, part_index: part_index, chap_index: chap_index,
+        sec_index: sec_index + 1)
+      return "#{part_index+1}_#{chap_index+1}_#{sec_index + 2}_0_0_0"
+    end
+    if chap_index && Chapter.exists?(law_id: @article.id, part_index: part_index, chap_index: chap_index + 1)
+      return "#{part_index+1}_#{chap_index + 2}_0_0_0_0"
+    end
+    if part_index && Part.exists?(law_id: @article.id, part_index: part_index + 1)
+      return "#{part_index + 2}_0_0_0_0_0"
+    end
+    return nil
   end
 
   def replace_search_link
@@ -329,72 +489,150 @@ class Api::V1::ArticlesController < ApplicationController
 
   def convert_replace_link (string)
     pattern = '<a[^>]+vbpq-timkiem[^>]+Keyword='
-    findStart = (/#{pattern}/m).match(string)
+    findStart = (/#{pattern}/i).match(string)
     pattern = '&'
-    findEnd = (/#{pattern}/m).match(string)
+    findEnd = (/#{pattern}/i).match(string[findStart.end(0),string.length])
     if findStart && findEnd
-      return '<a target="_blank" class="toanvan" href="/searchlaw?query=' + string[findStart.end(0),findEnd.begin(0)]
+      return '<a target="_blank" class="article-searchlink" href="/searchlaw?query=' + string[(findStart.end(0))...(findStart.end(0)+findEnd.begin(0))] + '">'
     end 
+    return string
   end
 
   def insert_html_law_modify
-    @modifies = @article.relationshipmodifies
+    modifies = @article.relationshipmodifies.order(position: :asc)
     browsed = []
-    @modifies.each do |a|
+    modifies.each do |a|
       if browsed.include? a.position 
         next
       end
       browsed.push(a.position)
-      title = firstStrip(get_title(@article,a.position))
-      modified_law_id = a.modified_law_id
-      html_insert = '<a target="_blank" title="Sửa đổi văn bản" href="/articles/' + modified_law_id + '#'+sumary_to_position(a)+'" class="link_modify"><i class="fa fa-link"></i></a>'
-      if title != nil
-        pattern = convert2regex(title)
-        find = /#{pattern}/m.match(@full_html)
-        if find != nil
-          @full_html = @full_html[0,find.end(0)] + html_insert + @full_html[find.end(0),@full_html.length]
+      tag = '<a class="article-position" name="' + a.position + '"></a>(.(?!<\/p>))+.<\/p>'
+      nxt_post = get_next_post_by_post(a.position)
+      nxt_tag = '<a class="article-position" name="' + nxt_post + '"></a>'
+      findTag = /#{tag}/m.match(@full_html)
+      findNextTag = /#{nxt_tag}/m.match(@full_html)
+      if findTag && findNextTag
+        @full_html =  @full_html[0,findTag.end(0)] + '<div class="modify-container"><div id="modify-box" class="modify-box-'+ a.position + '">' + @full_html[findTag.end(0),@full_html.length]
+        findNextTag = /#{nxt_tag}/m.match(@full_html)
+        @full_html =  @full_html[0,findNextTag.begin(0)] + '</div></div>' + @full_html[findNextTag.begin(0),@full_html.length]
+      end
+      # title = firstStrip(get_title(@article,a.position))
+      # modified_law_id = a.modified_law_id
+      # html_insert = '<a target="_blank" title="Sửa đổi văn bản" href="/articles/' + modified_law_id + '#'+sumary_to_position(a)+'" class="link_modify"><i class="fa fa-link"></i></a>'
+      # if title != nil
+      #   pattern = convert2regex(title)
+      #   find = /#{pattern}/m.match(@full_html)
+      #   if find != nil
+      #     @full_html = @full_html[0,find.end(0)] + html_insert + @full_html[find.end(0),@full_html.length]
+      #   end
+      # end
+    end
+  end
+
+  def render_law_modify_json
+    modifies = @article.relationshipmodifies.order(position: :asc,part_modify_index: :asc,chap_modify_index: :asc,
+          sec_modify_index: :asc, law_modify_index: :asc,item_modify_index: :asc,point_modify_index: :asc)
+    modifies.each do |m|
+      exist = false
+      laws = Article.where(id: m.modified_law_id)
+      law_modified = nil
+      for l in laws
+        law_modified = l
+        break
+      end
+      modified_pst = sumary_to_position(m)[0]
+      content = nil
+      if law_modified
+        content = reform_html(get_title(law_modified,modified_pst).to_s)
+      end
+      modified_law = {
+        title: law_modified.article_type + ' ' + law_modified.numerical_symbol,
+        id: m.modified_law_id,
+        position: modified_pst,
+        position_name: sumary_to_position(m)[1],
+        content: content
+      }
+      @modifies_position.each { |modify|
+        if (modify[:post] == m.position)
+          exist = true
+          modified_laws = modify[:modified_laws]
+          modified_laws.push(modified_law)
+          modify[:modified_content] = modified_laws
         end
+      }
+      if !exist
+        result = {
+          post: m.position,
+          modified_laws: [modified_law]
+        }
+        @modifies_position.push(result)
       end
     end
   end
 
   def insert_html_modified_law
-    @reverse_relationshipmodifies = @article.reverse_relationshipmodifies
+    @reverse_relationshipmodifies = @article.reverse_relationshipmodifies.order(part_modify_index: :asc,chap_modify_index: :asc,
+          sec_modify_index: :asc, law_modify_index: :asc,item_modify_index: :asc,point_modify_index: :asc)
     @reverse_relationshipmodifies.each do |a|
-      position = sumary_to_position(a)
+      position = sumary_to_position(a)[0]
       law_modifies = Article.where(id: a.law_id)
       law_modify = nil
       for l in law_modifies
         law_modify = l
         break
       end
-      pattern = '<a name="' + position + '"></a>'
-      find = /#{pattern}/.match(@full_html)
-      if find != nil
-        type = law_modify.article_type
-        title = law_modify.title
-        post = a.position
-        ll_id = law_modify.id
-        public_day = law_modify.public_day.to_formatted_s(:long)
-        content = get_title(law_modify,a.position).to_s
-        content = reform_html(content)
-        insert_html ='<i class="fa fa-edit" data-toggle="modal" data-target="#'+ll_id+'_'+post+'"></i>'+
-          '<div class="modal fade" id="'+ll_id+'_'+post+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">'+
-          '<div class="modal-dialog modal-dialog-centered" role="document">' +
-          '<div class="modal-content">' +
-          '<div class="modal-header">' +
-          '<h5 class="modal-title" id="exampleModalLabel">'+
-          'Được sửa đổi, bổ sung tại <a target="_blank" href="/articles/'+ll_id+'#'+post+
-          '">' + type  + ' ' + "title" + '</a></h5>' +
-          ' <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-          '<span aria-hidden="true">&times;</span></button></div>' +
-          '<div class="modal-body">' +
-          '<p>Nội dung sửa đổi: </p><p class = "content_modified">'+ content +'</p>' +
-          '</div></div></div></div>'
-        insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
-        @full_html = @full_html[0,find.end(0)] + insert_html + @full_html[find.end(0),@full_html.length]
+      content = reform_html(get_title(l,a.position).to_s)
+      modify_law = {
+        modify_law_title: l.article_type + ' ' + l.numerical_symbol,
+        modify_law_id: a.law_id,
+        modify_law_pst: a.position,
+        content: content,
+        modify_law_date: l.public_day.strftime("%d/%m/%Y")
+      }
+      exist = false
+      @modified_position.each { |m|
+        if (m[:modified_post] == position)
+          exist = true
+          modify_laws = m[:modify_laws]
+          modify_laws.push(modify_law)
+          m[:modify_laws] = modify_laws
+        end
+      }
+      if !exist
+        result = {
+          modified_post: position,
+          nxt_post: get_next_pst(a),
+          modify_laws: [modify_law]
+        }
+        @modified_position.push(result)
       end
-    end 
+      # pattern = '<a class="article-position" name="' + position + '"></a>'
+      # find = /#{pattern}/.match(@full_html)
+      # if find != nil
+      #   print "asdasdadadsadasdasdadadadadadadadsaadadadad"
+      #   type = law_modify.article_type
+      #   title = law_modify.title
+      #   post = a.position
+      #   ll_id = law_modify.id
+      #   public_day = law_modify.public_day.to_formatted_s(:long)
+      #   content = get_title(law_modify,a.position).to_s
+      #   content = reform_html(content)
+      #   insert_html ='<i class="fa fa-edit" data-toggle="modal" data-target="#'+ll_id+'_'+post+'"></i>'+
+      #     '<div class="modal fade" id="'+ll_id+'_'+post+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">'+
+      #     '<div class="modal-dialog modal-dialog-centered" role="document">' +
+      #     '<div class="modal-content">' +
+      #     '<div class="modal-header">' +
+      #     '<h5 class="modal-title" id="exampleModalLabel">'+
+      #     'Được sửa đổi, bổ sung tại <a target="_blank" href="/articles/'+ll_id+'#'+post+
+      #     '">' + type  + ' ' + "title" + '</a></h5>' +
+      #     ' <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+      #     '<span aria-hidden="true">&times;</span></button></div>' +
+      #     '<div class="modal-body">' +
+      #     '<p>Nội dung sửa đổi: </p><p class = "content_modified">'+ content +'</p>' +
+      #     '</div></div></div></div>'
+      #   insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
+      #   @full_html = @full_html[0,find.end(0)] + insert_html + @full_html[find.end(0),@full_html.length]
+    end
   end
 
   def replace_definitions
