@@ -10,195 +10,181 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170808154601) do
+ActiveRecord::Schema.define(version: 20180422070206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "articles", id: false, force: :cascade do |t|
-    t.text "id"
-    t.text "title"
+  create_table "api_keys", force: :cascade do |t|
+    t.string "access_token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "content_types", force: :cascade do |t|
+    t.integer "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "deposit_histories", force: :cascade do |t|
+    t.bigint "money_account_id"
+    t.integer "ammount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["money_account_id"], name: "index_deposit_histories_on_money_account_id"
+  end
+
+  create_table "deposits", force: :cascade do |t|
+    t.string "user_id"
+    t.string "refcode"
+    t.boolean "done"
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_deposits_on_user_id"
+  end
+
+  create_table "lawyer_specializes", force: :cascade do |t|
+    t.bigint "lawyer_id"
+    t.bigint "specialization_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lawyer_id", "specialization_id"], name: "index_lawyer_specializes_on_lawyer_id_and_specialization_id", unique: true
+    t.index ["lawyer_id"], name: "index_lawyer_specializes_on_lawyer_id"
+    t.index ["specialization_id"], name: "index_lawyer_specializes_on_specialization_id"
+  end
+
+  create_table "lawyers", force: :cascade do |t|
+    t.string "user_id"
+    t.text "achievement"
+    t.string "cardNumber"
+    t.string "certificate"
+    t.text "education"
+    t.text "intro"
+    t.integer "price"
+    t.integer "exp"
+    t.float "rate"
+    t.integer "votes"
+    t.float "wr", default: -10.0
+    t.text "workPlace"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_lawyers_on_user_id"
+  end
+
+  create_table "money_accounts", force: :cascade do |t|
+    t.bigint "profile_id"
+    t.integer "ammount", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["profile_id"], name: "index_money_accounts_on_profile_id"
+  end
+
+  create_table "profiles", force: :cascade do |t|
+    t.string "user_id"
+    t.string "userName"
+    t.string "displayName"
+    t.string "avatar"
+    t.datetime "birthday"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["userName"], name: "index_profiles_on_userName", unique: true
+    t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.string "user_id", null: false
+    t.bigint "lawyer_id", null: false
     t.text "content"
-    t.text "full_html"
-    t.text "index_html"
-    t.text "numerical_symbol"
-    t.date "public_day"
-    t.date "day_report"
-    t.text "article_type"
-    t.text "source"
-    t.text "agency_issued"
-    t.text "the_signer"
-    t.text "signer_title"
-    t.text "scope"
-    t.date "effect_day"
-    t.text "effect_status"
-    t.integer "count_click"
-    t.date "created_at"
-    t.date "updated_at"
+    t.float "star", default: 0.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lawyer_id"], name: "index_reviews_on_lawyer_id"
+    t.index ["user_id", "lawyer_id"], name: "index_reviews_on_user_id_and_lawyer_id", unique: true
+    t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
-  create_table "chapters", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "part_index"
-    t.integer "totalchap"
-    t.integer "chap_index"
-    t.integer "chap_start"
-    t.integer "chap_end"
-    t.text "chap_name"
+  create_table "roles", force: :cascade do |t|
+    t.integer "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "extract_modify", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.integer "type"
-    t.text "part_modify_name"
-    t.text "chap_modify_name"
-    t.text "sec_modify_name"
-    t.text "law_modify_name"
-    t.text "item_modify_name"
-    t.text "point_modify_name"
-    t.text "text_delete"
-    t.text "from_text"
-    t.text "to_text"
-    t.text "numerical_symbol"
+  create_table "room_files", force: :cascade do |t|
+    t.bigint "room_id"
+    t.bigint "content_type_id"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_type_id"], name: "index_room_files_on_content_type_id"
+    t.index ["room_id"], name: "index_room_files_on_room_id"
   end
 
-  create_table "header_doc", id: false, force: :cascade do |t|
-    t.text "doc_id"
-    t.text "header_text"
+  create_table "rooms", force: :cascade do |t|
+    t.bigint "lawyer_id"
+    t.string "user_id"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lawyer_id"], name: "index_rooms_on_lawyer_id"
+    t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
-  create_table "index_modify_position", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modified_law_id"
-    t.integer "part_modify_index"
-    t.integer "chap_modify_index"
-    t.integer "sec_modify_index"
-    t.integer "law_modify_index"
-    t.integer "item_modify_index"
-    t.integer "point_modify_index"
-    t.boolean "correct"
+  create_table "specializations", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "index_modify_positions", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modified_law_id"
-    t.integer "part_modify_index"
-    t.integer "chap_modify_index"
-    t.integer "sec_modify_index"
-    t.integer "law_modify_index"
-    t.integer "item_modify_index"
-    t.integer "point_modify_index"
-    t.boolean "correct"
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "room_id"
+    t.text "content"
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id"], name: "index_tasks_on_room_id"
   end
 
-  create_table "items", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "part_index"
-    t.integer "chap_index"
-    t.integer "sec_index"
-    t.integer "law_index"
-    t.integer "totalitem"
-    t.integer "item_index"
-    t.integer "item_start"
-    t.integer "item_end"
-    t.text "item_name"
-    t.text "item_content"
-    t.integer "title_end"
+  create_table "user_roles", force: :cascade do |t|
+    t.bigint "role_id"
+    t.string "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_user_roles_on_role_id"
+    t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
+    t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
 
-  create_table "law_has_modification", id: false, force: :cascade do |t|
-    t.text "doc_id"
-    t.text "modyfied_doc_id"
+  create_table "users", id: :string, force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "status", default: "online"
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "authentication_token", limit: 30
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "laws", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "part_index"
-    t.integer "chap_index"
-    t.integer "sec_index"
-    t.integer "totallaw"
-    t.integer "law_index"
-    t.integer "law_start"
-    t.integer "law_end"
-    t.text "law_name"
-    t.text "law_content"
-    t.integer "title_end"
-  end
-
-  create_table "link_modify_articles", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.text "position"
-    t.text "modify_doc_id"
-  end
-
-  create_table "parts", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "totalpart"
-    t.integer "part_index"
-    t.integer "part_start"
-    t.integer "part_end"
-    t.text "name_part"
-  end
-
-  create_table "points", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "part_index"
-    t.integer "chap_index"
-    t.integer "sec_index"
-    t.integer "law_index"
-    t.integer "item_index"
-    t.integer "totalpoint"
-    t.integer "point_index"
-    t.integer "point_start"
-    t.integer "point_end"
-    t.text "point_name"
-    t.text "point_content"
-  end
-
-  create_table "sections", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "part_index"
-    t.integer "chap_index"
-    t.integer "totalsec"
-    t.integer "sec_index"
-    t.integer "sec_start"
-    t.integer "sec_end"
-    t.text "sec_name"
-  end
-
-  create_table "type_modify_law", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_0", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_1", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
-  create_table "type_modify_law_2", id: false, force: :cascade do |t|
-    t.text "law_id"
-    t.integer "type"
-    t.text "doc_content_update"
-    t.text "numerical_symbol"
-    t.text "position"
-  end
-
+  add_foreign_key "deposit_histories", "money_accounts"
+  add_foreign_key "deposits", "users"
+  add_foreign_key "lawyer_specializes", "lawyers"
+  add_foreign_key "lawyer_specializes", "specializations"
+  add_foreign_key "lawyers", "users"
+  add_foreign_key "money_accounts", "profiles"
+  add_foreign_key "profiles", "users"
+  add_foreign_key "reviews", "lawyers"
+  add_foreign_key "reviews", "users"
+  add_foreign_key "room_files", "content_types"
+  add_foreign_key "room_files", "rooms"
+  add_foreign_key "rooms", "lawyers"
+  add_foreign_key "rooms", "users"
+  add_foreign_key "tasks", "rooms"
+  add_foreign_key "user_roles", "roles"
+  add_foreign_key "user_roles", "users"
 end

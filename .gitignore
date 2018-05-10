@@ -16,10 +16,9 @@
 # Ignore Byebug command history file.
 .byebug_history
 
-config/database.yml
 config/secrets.yml
-
-app/assets/fonts/
-
 db/*.tsv
-db/.~lock.laws.tsv#
+public/uploads
+
+# Ignore application configuration
+/config/application.yml

@@ -15,10 +15,7 @@ class Article < ApplicationRecord
     class_name: "Index_modify_position"
 
   has_many :law_modify,
-    through: :reverse_relationshipmodifies,
-    source: :law_id
-
-  self.per_page = 15
+    through: :reverse_relationshipmodifies, source: :law_id
 
   def isLawModify?
     relationshipmodifies.present?
@@ -28,16 +25,23 @@ class Article < ApplicationRecord
     reverse_relationshipmodifies.present?
   end
 
-  searchkick batch_size: 200, merge_mappings: true,
+  has_many :neighbors, through: :article_neighbor,
+    source: :neighbor
+
+  searchkick  callbacks: false,
+    index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued, :public_day],
     settings: {
-      analysis: {
-        analyzer: {
-          vnanalysis: {
-            tokenizer: "icu_tokenizer",
-            filter: [
-              "icu_folding",
-              "icu_normalizer"
-            ]
+      index: {
+        analysis: {
+          analyzer: {
+            vnanalysis: {
+              type: "custom",
+              tokenizer: "vi_tokenizer",
+              char_filter:  [ "html_strip" ],
+              filter: [
+                "icu_folding"
+              ]
+            }
           }
         }
       }
@@ -47,39 +51,54 @@ class Article < ApplicationRecord
         properties: {
           title: {
             type: "text",
-            index: "true",
-            boost: 10
+            index: true,
+            boost: 8,
+            analyzer: "vnanalysis"
           },
           content: {
             type: "text",
-            index: "true",
-            boost: 10
+            index: true,
+            boost: 2,
+            analyzer: "vnanalysis"
           },
-          index_html: {
+          numerical_symbol: {
             type: "text",
-            index: "true"
+            boost: 10,
+            index: true
           },
-          full_html: {
+          id: {
             type: "text",
-            index: "true"
+            boost: 0,
+            index: true
           },
-          public_day: {
+          effect_day: {
             type: "date",
-            index: "true"
+            boost: 0,
+            index: true
+          },
+          effect_status: {
+            type: "text",
+            boost: 0,
+            index: true
           }
         }
       }
     }
+  def search_data
+    {
+      id: id,
+      title: title,
+      content: content,
+      numerical_symbol: numerical_symbol,
+      public_day: public_day,
+      article_type: article_type,
+      effect_day: effect_day,
+      agency_issued: agency_issued,
+      effect_status: effect_status
+    }
+  end
 
   class << self
-    def search_article_much_view
-      Article.order(count_click: :desc).limit(5)
-    end
-
-    def search_article_newest
-      Article.order(public_day: :desc).limit(4)
-    end
-
     def filter_by_type opts = {}
       article_type = opts[:article_type]
       if article_type != nil
