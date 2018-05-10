@@ -30,14 +30,16 @@ class Api::V1::ArticlesController < ApplicationController
   def get_article
     @article = Article.find_by id: params[:id]
     if @article
-      render_index_html
-      @modified_position = Array.new
-      @modifies_position = Array.new
-      if @article.isModifedLaw?
-          insert_html_modified_law
-      end
-      if @article.isLawModify?
-        render_law_modify_json
+      if @article.parts.length > 0
+        render_index_html
+        @modified_position = Array.new
+        @modifies_position = Array.new
+        if @article.isModifedLaw?
+            insert_html_modified_law
+        end
+        if @article.isLawModify?
+          render_law_modify_json
+        end
       end
     end
   end
@@ -606,32 +608,6 @@ class Api::V1::ArticlesController < ApplicationController
         }
         @modified_position.push(result)
       end
-      # pattern = '<a class="article-position" name="' + position + '"></a>'
-      # find = /#{pattern}/.match(@full_html)
-      # if find != nil
-      #   print "asdasdadadsadasdasdadadadadadadadsaadadadad"
-      #   type = law_modify.article_type
-      #   title = law_modify.title
-      #   post = a.position
-      #   ll_id = law_modify.id
-      #   public_day = law_modify.public_day.to_formatted_s(:long)
-      #   content = get_title(law_modify,a.position).to_s
-      #   content = reform_html(content)
-      #   insert_html ='<i class="fa fa-edit" data-toggle="modal" data-target="#'+ll_id+'_'+post+'"></i>'+
-      #     '<div class="modal fade" id="'+ll_id+'_'+post+'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">'+
-      #     '<div class="modal-dialog modal-dialog-centered" role="document">' +
-      #     '<div class="modal-content">' +
-      #     '<div class="modal-header">' +
-      #     '<h5 class="modal-title" id="exampleModalLabel">'+
-      #     'Được sửa đổi, bổ sung tại <a target="_blank" href="/articles/'+ll_id+'#'+post+
-      #     '">' + type  + ' ' + "title" + '</a></h5>' +
-      #     ' <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-      #     '<span aria-hidden="true">&times;</span></button></div>' +
-      #     '<div class="modal-body">' +
-      #     '<p>Nội dung sửa đổi: </p><p class = "content_modified">'+ content +'</p>' +
-      #     '</div></div></div></div>'
-      #   insert_html += '<span class="glyphicon glyphicon-tags" id="mark_modifed"></span></div>'
-      #   @full_html = @full_html[0,find.end(0)] + insert_html + @full_html[find.end(0),@full_html.length]
     end
   end
 
