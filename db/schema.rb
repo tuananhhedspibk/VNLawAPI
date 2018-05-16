@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 20180422070206) do
     t.bigint "lawyer_id"
     t.string "user_id"
     t.text "description"
+    t.boolean "opening", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["lawyer_id"], name: "index_rooms_on_lawyer_id"

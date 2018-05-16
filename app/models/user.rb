@@ -9,8 +9,7 @@ class User < ApplicationRecord
     :birthday, :avatar]].freeze
 
   devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :validatable,
-    :omniauthable, omniauth_providers: %i(facebook google_oauth2).freeze
+    :recoverable, :rememberable, :validatable.freeze
 
   has_one :lawyer, dependent: :destroy
   has_one :profile, dependent: :destroy
@@ -34,16 +33,5 @@ class User < ApplicationRecord
 
   def room_member? room
     user.room_ids.include? room.id
-  end
-
-  class << self
-    def from_omniauth auth
-      where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-        auth_info = auth.info
-        user.email = auth_info.email
-        user.password = Devise.friendly_token[0, 20]
-        user.name = auth_info.name
-      end
-    end
   end
 end

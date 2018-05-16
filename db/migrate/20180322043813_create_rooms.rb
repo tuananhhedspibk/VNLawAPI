@@ -5,6 +5,7 @@ class CreateRooms < ActiveRecord::Migration[5.1]
       t.references :user, foreign_key: true, type: :string
 
       t.text :description
+      t.boolean :opening, default: true
 
       t.timestamps
     end
