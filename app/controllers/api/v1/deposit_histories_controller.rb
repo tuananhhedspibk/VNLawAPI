@@ -40,7 +40,7 @@ class Api::V1::DepositHistoriesController < Api::V1::ApplicationController
 
   def response_deposit_histories_idx
     render json: {
-      d_h: acc.deposit_histories
+      d_h: acc.deposit_histories.order(updated_at: :desc)
     }, status: :ok
   end
 
