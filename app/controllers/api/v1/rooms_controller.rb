@@ -139,7 +139,7 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     render json: {
       message: I18n.t("app.api.messages.not_found",
         authentication_keys: "Room")
-    }, status: :not_found
+    }, status: :ok
   end
 
   def find_room
