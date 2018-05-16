@@ -63,7 +63,8 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
         status: room.lawyer.user.status,
         displayName: room.lawyer.profile.displayName,
         avatar: room.lawyer.profile.avatar,
-        userName: room.lawyer.profile.userName
+        userName: room.lawyer.profile.userName,
+        price: room.lawyer.price
       }
       user = {
         uid: room.user.id,

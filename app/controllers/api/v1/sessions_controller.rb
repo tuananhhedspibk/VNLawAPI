@@ -24,7 +24,7 @@ class Api::V1::SessionsController < Devise::SessionsController
   attr_reader :user
 
   def response_create_data
-    if (user.role.name == 'Lawyer')
+    if (user.role.name == "Lawyer")
       render json: {
         id: user.id,
         message: I18n.t("devise.sessions.signed_in"),
@@ -33,7 +33,8 @@ class Api::V1::SessionsController < Devise::SessionsController
         displayName: user.profile.displayName,
         role: user.role.name,
         lawyer_id: user.lawyer.id,
-        avatar: user.profile.avatar
+        avatar: user.profile.avatar,
+        price: user.lawyer.price
       }, status: :ok
     else
       render json: {
