@@ -4,6 +4,7 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
   before_action :find_room, only: [:update, :show]
   before_action :load_object, only: [:index, :create]
   before_action :check_user_id, only: :create
+  before_action :check_permission, :get_lawyer, only: :user_get_room
 
   def index
     @rooms = user.rooms
@@ -38,9 +39,20 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     }, status: :ok
   end
 
+  def user_get_room
+    if lawyer
+      @room = Room.find_by_user_id_and_lawyer_id current_user.id, lawyer.id
+      if room
+        response_has_room
+      else
+        response_not_has_room
+      end
+    end
+  end
+
   private
 
-  attr_reader :room, :rooms, :user
+  attr_reader :room, :rooms, :user, :lawyer
 
   def response_rooms_idx
     data = []
@@ -117,6 +129,19 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
     }, status: :unprocessable_entity
   end
 
+  def response_has_room
+    render json: {
+      room: room
+    }, status: :ok
+  end
+
+  def response_not_has_room
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "Room")
+    }, status: :not_found
+  end
+
   def find_room
     @room = Room.find_by id: params[:id]
     return if room
@@ -141,6 +166,22 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
       message: I18n.t("app.api.messages.not_found",
         authentication_keys: "User")
     }, status: :not_found
+  end
+
+  def get_lawyer
+    @lawyer = Lawyer.find_by id: params[:lawyer_id].to_i
+    return if lawyer
+    render json: {
+      message: I18n.t("app.api.messages.not_found",
+        authentication_keys: "Lawyer")
+    }, status: :not_found
+  end
+
+  def check_permission
+    return if current_user.role.name == "User"
+    render json: {
+      message: I18n.t("app.api.messages.not_authorized")
+    }, status: :unauthorized
   end
 
   def room_update_params

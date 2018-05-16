@@ -21,6 +21,8 @@ Rails.application.routes.draw do
           get "/money_account", to: "money_accounts#show"
           patch "/money_account", to: "money_accounts#update"
 
+          get "/user_get_room", to: "rooms#user_get_room"
+
           resources :articles, only: [:show, :index],
             :constraints => { :id => /[0-9A-Za-z\-\.\_]+/ }
           resources :users, only: [:show, :update],

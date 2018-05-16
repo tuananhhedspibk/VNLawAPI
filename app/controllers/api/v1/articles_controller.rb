@@ -10,7 +10,8 @@ class Api::V1::ArticlesController < ApplicationController
         modify_arr: @modifies_position,
         detail: @article.as_json(only: [:title, :numerical_symbol,
           :public_day, :day_report, :article_type, :source, :agency_issued, 
-          :the_signer, :signer_title,:scope,:effect_day, :effect_status, :topics] )
+          :the_signer, :signer_title,:scope,:effect_day, :effect_status, :topics] ),
+        neighbors: @neighbors
       }, status: :ok
     else
       render json: {
@@ -30,6 +31,10 @@ class Api::V1::ArticlesController < ApplicationController
   def get_article
     @article = Article.find_by id: params[:id]
     if @article
+      @neighbors = []
+      neighbors_ids = @article.neighbors.split(" ")
+      @neighbors = Article.where(id: neighbors_ids)
+        .select("id, title, numerical_symbol")
       if @article.parts.length > 0
         render_index_html
         @modified_position = Array.new

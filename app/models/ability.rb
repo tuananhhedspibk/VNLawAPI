@@ -32,7 +32,7 @@ class Ability
           review.user_id == user_id
         end
 
-        can :read, Room do |room|
+        can [:read, :update], Room do |room|
           room.user_id == user.id
         end
 

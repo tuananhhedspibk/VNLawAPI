@@ -1,6 +1,6 @@
 class Room < ApplicationRecord
   CREATE_PARAMS = [:user_id, :lawyer_id, :description].freeze  
-  UPDATE_PARAMS = [:description].freeze
+  UPDATE_PARAMS = [:description, :opening].freeze
 
   belongs_to :lawyer
   belongs_to :user
