@@ -8,7 +8,9 @@ class Api::V1::TasksController < Api::V1::ApplicationController
   def index
     if room
       @tasks = room.tasks
-      authorize! :read, tasks.first
+      if tasks.length > 0
+        authorize! :read, tasks.first
+      end
     elsif lawyer
       @tasks = []
       lawyer.rooms.each do |room|
