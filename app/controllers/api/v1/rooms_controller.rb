@@ -8,7 +8,7 @@ class Api::V1::RoomsController < Api::V1::ApplicationController
 
   def index
     @rooms = user.rooms
-    if (rooms.length > 0)
+    if rooms.length > 0
       authorize! :read, rooms.first
     end
 

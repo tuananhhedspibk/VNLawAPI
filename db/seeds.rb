@@ -239,14 +239,14 @@ for i in (1..12) do
   )
 end
 
-for i in (1..18) do
+for i in (1..28) do
   MoneyAccount.create!(
     profile_id: i,
     ammount: 10000
   )
 end
 
-for i in (1..18) do
+for i in (1..28) do
   DepositHistory.create!(
     money_account_id: i,
     ammount: 10
