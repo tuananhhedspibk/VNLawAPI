@@ -235,7 +235,21 @@ Lawyer.all.each do |lawyer|
       user_id: user_ids[user_id_idx],
       description: Faker::HarryPotter.house
     )
-
+    mess_id = "-LCnuEXzOCXTZM_LiTOG" + r_id.to_s
+    firebase_room[r_id.to_s] = {
+      "members": {
+        "customer": user_ids[user_id_idx],
+        "lawyer": lawyer.id
+      },
+      "messages": {
+        mess_id => {
+          "content": "Xin chào luật sư.\nTôi tên là: goten.\nHiện tại tôi đang gặp vấn đề: 12" +
+            "\nRất mong được luật sư tư vấn, tôi xin chân thành cảm ơn luật sư.",
+          "msgTimeStamp": "1526658038969",
+          "senderUid": user_ids[user_id_idx]
+        }
+      }
+    }
     r_id += 1
   end
   lawyer.update_attributes rate: (sum_star.to_f / lawyer.votes.to_f)
@@ -277,4 +291,8 @@ Lawyer.all.each do |lawyer|
     
     lawyer.update_attributes wr: wr
   end
+end
+
+File.open("./lkbc-chat-export.json", "w") do |f|
+  f.write(JSON.pretty_generate(firebase_room))
 end
