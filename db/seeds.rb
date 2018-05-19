@@ -208,7 +208,7 @@ for i in (1..14) do
   end
 end
 
-r_id = 0
+r_id = 1
 firebase_room = {
 
 }
