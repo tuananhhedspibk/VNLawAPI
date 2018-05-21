@@ -37,7 +37,7 @@ user_ids = [
   "03CveDopvDVlPrFCIDpwvjQcoht1",
   "0K0a7kCxqhSfKN5iJ1oNiLShqSt1",
   "0RQBhsa2JsMWZovGyjn75VWYa9n1",
-  "Om3iHGyDkuZE7IEA8k2s0Kybu2F2",
+  "0lwAtZAVwfgWkTarcWVraUWybjC2",
   "dSk7TgQhBCUuZ0qaJlp9lrWPS152",
   "mVNbOUT0HNeJRxhHzrs0nA9dOqI3",
   "Ozf7XwqczQbwXEBpgdqKC6xRp622",
@@ -68,7 +68,7 @@ user_names = [
   "light.1516676291611",
   "linhtm.1509005103447",
   "linh.tran.1509008739091",
-  "lkbc.vnlaw.1510112753493",
+  "name1.1510112753493",
   "truong.1508822781704",
   "name3.1521879034058",
   "ishida.1523521672949",
@@ -99,7 +99,7 @@ user_emails = [
   "light@gmail.com",
   "linhtm@gmail.com",
   "tranlinh265@gmail.com",
-  "lkbc.vnlaw@gmail.com",
+  "name1@gmail.com",
   "abc@gmail.com",
   "name3@gmail.com",
   "ishida@gmail.com",
@@ -239,7 +239,7 @@ Lawyer.all.each do |lawyer|
     firebase_room[r_id.to_s] = {
       "members": {
         "customer": user_ids[user_id_idx],
-        "lawyer": lawyer.id
+        "lawyer": lawyer.user_id
       },
       "messages": {
         mess_id => {
