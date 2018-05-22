@@ -32,9 +32,11 @@ class Api::V1::ArticlesController < ApplicationController
     @article = Article.find_by id: params[:id]
     if @article
       @neighbors = []
-      neighbors_ids = @article.neighbors.split(" ")
-      @neighbors = Article.where(id: neighbors_ids)
-        .select("id, title, numerical_symbol")
+      if @article.neighbors
+        neighbors_ids = @article.neighbors.split(" ")
+        @neighbors = Article.where(id: neighbors_ids)
+          .select("id, title, numerical_symbol")
+      end
       if @article.parts.length > 0
         render_index_html
         @modified_position = Array.new
@@ -346,7 +348,7 @@ class Api::V1::ArticlesController < ApplicationController
       item = Item.where(law_id: object.modified_law_id, part_index: object.part_modify_index,chap_index: object.chap_modify_index, 
         sec_index: object.sec_modify_index, law_index: object.law_modify_index, item_index: object.item_modify_index ).first
       if item.item_name
-        item_name = 'khoản ' + item.item_name
+        item_name = 'Khoản ' + item.item_name
       end
     else 
       item_index = 0
@@ -358,7 +360,7 @@ class Api::V1::ArticlesController < ApplicationController
         sec_index: object.sec_modify_index, law_index: object.law_modify_index, item_index: object.item_modify_index, 
         point_index: object.point_modify_index).first
       if point.point_name
-        point_name = 'điểm ' + point.point_name
+        point_name = 'Điểm ' + point.point_name
       end
     else 
       point_index = 0
