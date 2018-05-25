@@ -40,8 +40,7 @@ class Api::V1::LawyersController < Api::V1::ApplicationController
         specializes: lawyer.specializations.as_json(only: :name),
         mn_acc: mn_acc.as_json(only: [:ammount, :updated_at]),
         status: lawyer.user.status,
-        votes: lawyer.votes,
-        mn_acc: mn_acc.as_json(only: [:ammount, :updated_at])
+        votes: lawyer.votes
       }
     }, status: :ok
   end
