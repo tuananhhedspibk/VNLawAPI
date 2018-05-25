@@ -11,6 +11,6 @@ class Profile < ApplicationRecord
   accepts_nested_attributes_for :money_account, update_only: true,
     allow_destroy: true
 
-  # searchkick word_start: [:displayName], suggest: [:displayName],
-  #   batch_size: 50
+  searchkick word_start: [:displayName], suggest: [:displayName],
+    batch_size: 50
 end

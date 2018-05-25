@@ -18,7 +18,7 @@
 
 config/secrets.yml
 db/*.tsv
-public/uploads
+public/uploads/*
 
 # Ignore application configuration
 /config/application.yml

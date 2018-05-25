@@ -1,12 +1,11 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: 5
+  username: root
+  password: root
+  host: lkbc-pg-1
 
 development:
   <<: *default
-  database: VNLaw_development
-test:
-  <<: *default
-  database: VNLaw_test
-
+  database: vnlaw

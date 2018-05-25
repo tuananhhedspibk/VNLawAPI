@@ -1,2 +1,3 @@
 Searchkick.client = Elasticsearch::Client.new(hosts: ["lkbc-elastic-1"],
-  retry_on_failure: true, transport_options: {request: {timeout: 300}})
+  retry_on_failure: true, transport_options: {request: {timeout: 100000}})
+Searchkick.timeout = 120

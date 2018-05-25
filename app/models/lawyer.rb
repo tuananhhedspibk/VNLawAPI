@@ -17,4 +17,7 @@ class Lawyer < ApplicationRecord
   has_many :specializations, through: :lawyer_specializes
 
   accepts_nested_attributes_for :profile, update_only: true
+
+  searchkick word_start: [:name], suggest: [:name],
+    batch_size: 50
 end
