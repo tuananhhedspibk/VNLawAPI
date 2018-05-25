@@ -33,7 +33,7 @@ class Article < ApplicationRecord
           analyzer: {
             vnanalysis: {
               type: "custom",
-              tokenizer: "vi_tokenizer",
+              tokenizer: "standard",
               char_filter:  [ "html_strip" ],
               filter: [
                 "icu_folding"
