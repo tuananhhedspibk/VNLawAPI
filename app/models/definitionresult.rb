@@ -28,10 +28,12 @@ class Definitionresult < ApplicationRecord
     return arr_def.first
   end
 
-  def self.getDef
+  def self.getDef (string)
+    article = string.downcase
+    results = []
     definitions = Definitionresult.where(global_def: true)
     definitions.each do |x|
-      x.sentence.gsub! '_', ' '
+      # x.sentence.gsub! '_', ' '
       x.sentence.gsub! '*', ' '
       x.concept.gsub! '_', ' '
       x.concept.gsub! '*', ' '
@@ -42,8 +44,15 @@ class Definitionresult < ApplicationRecord
       x.sentence.gsub! '“', ' '
       x.sentence.gsub! '”', ' '
       x.concept = (x.concept.strip).downcase 
-      x.sentence = '<a href="#" class="definition-popover" data-toggle="popover" data-trigger="hover" data-content="'+x.sentence+'">'+x.concept+'</a>'
+      if article.include? x.concept
+        x.concept.gsub! '(', '\('
+        x.concept.gsub! ')', '\)'
+        x.sentence = '<a href="#" class="definition-popover" data-toggle="popover" data-trigger="hover" data-content="'+x.sentence+'">'+x.concept+'</a>'
+        if !(results.any? {|r| r.concept == x.concept})
+          results.push(x)
+        end
+      end
     end
-    definitions
+    results
   end
 end

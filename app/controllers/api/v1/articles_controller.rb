@@ -105,8 +105,6 @@ class Api::V1::ArticlesController < ApplicationController
         insert_html_law_modify
       end
 
-
-
       @article.update_attribute(:full_html, @full_html)
       @article.update_attribute(:index_html, @index_html)
     end
@@ -287,9 +285,6 @@ class Api::V1::ArticlesController < ApplicationController
         @index_html +=  '<div class="' + type + '">
           <a class="internal_link" href="#' + position + '">' + name + '</a></div>'
       end
-    else
-      print "ERROR"
-      print pattern + "___"
     end
   end
 
@@ -619,9 +614,19 @@ class Api::V1::ArticlesController < ApplicationController
   end
 
   def replace_definitions
-    defs = Definitionresult.getDef
+    defs = Definitionresult.getDef(@full_html)
     for d in defs
       @full_html.gsub!(/#{d.concept}/i, d.sentence)
+    end
+    find = (/data-content=[^\>]+\_[^\>]+/m).match(@full_html)
+    while find
+      len = find.length
+      for i in 1..len
+        replace_link = find[i-1].gsub '_', ' ' 
+        @full_html = @full_html[0,find.begin(i-1)] + replace_link + @full_html[find.end(i-1),@full_html.length]
+        break
+      end
+      find =  (/data-content=[^\>]+\_[^\>]+/m).match(@full_html)
     end
   end
 end
