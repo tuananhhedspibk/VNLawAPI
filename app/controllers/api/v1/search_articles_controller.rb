@@ -107,7 +107,7 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
     else
       @articles = Article.search query ,where: @query_group3 , match: :phrase, 
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
-            :effect_day, :effect_status],limit: 10000
+            :effect_day, :effect_status],limit: 100000
     end
     return @articles
   end
