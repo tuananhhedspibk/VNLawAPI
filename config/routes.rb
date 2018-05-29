@@ -14,7 +14,7 @@ Rails.application.routes.draw do
           get "/search/lawyers", to: "search_lawyers#index"
           get "/search/top_lawyers", to: "search_lawyers#top_lawyers"
           get "/search/lawyers_names", to: "search_lawyers#index_names"
-          # get "/search/articles", to: "search_articles#index"          
+          get "/search/articles", to: "search_articles#index"          
 
           post "/deposits", to: "deposits#create"
           get "/checkdeposit", to: "checkdeposit#show"
