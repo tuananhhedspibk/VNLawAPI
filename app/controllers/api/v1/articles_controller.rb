@@ -612,11 +612,11 @@ class Api::V1::ArticlesController < ApplicationController
       end
     end
   end
-
+  
   def replace_definitions
     defs = Definitionresult.getDef(@full_html)
     for d in defs
-      @full_html.gsub!(/#{d.concept}/i, d.sentence)
+      @full_html.gsub!(/#{d.concept}/im)  {|s|  d.sentence + s +'</a>'}
     end
     find = (/data-content=[^\>]+\_[^\>]+/m).match(@full_html)
     while find

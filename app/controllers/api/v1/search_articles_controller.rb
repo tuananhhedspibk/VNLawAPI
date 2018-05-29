@@ -74,7 +74,7 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
     else
       @articles = Article.search query,
         select: [:id, :title, :public_day, :article_type, :numerical_symbol,
-          :effect_day, :effect_status],
+          :effect_day, :effect_status],limit: 100000,
         order: {public_day: :desc}
     end
   end
@@ -85,29 +85,29 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
         @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          order: {public_day: :desc}
+          order: {public_day: :desc}, limit: 100000
       else
         @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          order: {public_day: :asc}
+          order: {public_day: :asc}, limit: 100000
       end
     elsif params[:group2_1] == I18n.t("app.search_box.filter.filter_6")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
         @articles = Article.search query, where: @query_group3, match: :phrase,
           select: [:id, :title, :public_day,:article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          order: {effect_day: :desc}
+          order: {effect_day: :desc}, limit: 100000
       else
         @articles = Article.search query, where: @query_group3 , match: :phrase,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          order: {effect_day: :asc}
+          order: {effect_day: :asc}, limit: 100000
       end
     else
-      @articles = Article.search query ,where: @query_group3 , match: :phrase,
+      @articles = Article.search query ,where: @query_group3 , match: :phrase, 
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
-            :effect_day, :effect_status]
+            :effect_day, :effect_status],limit: 10000
     end
     return @articles
   end
@@ -118,29 +118,29 @@ class Api::V1::SearchArticlesController < Api::V1::ApplicationController
         @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          match: :word, order: {public_day: :desc}
+          match: :word, order: {public_day: :desc}, limit: 100000
       else
         @articles = Article.search query, where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          match: :word, order: {public_day: :asc}, operator: "or"
+          match: :word, order: {public_day: :asc}, operator: "or", limit: 100000
       end
     elsif params[:group2_1] == I18n.t("app.search_box.filter.filter_6")
       if params[:group2_2] == I18n.t("app.search_box.filter.filter_4")
         @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          match: :word, order: {effect_day: :desc}
+          match: :word, order: {effect_day: :desc}, limit: 100000
       else
         @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
             :effect_day, :effect_status],
-          match: :word, order: {effect_day: :asc}
+          match: :word, order: {effect_day: :asc}, limit: 100000
       end
     else
       @articles = Article.search query, operator: "or", where: @query_group3,
           select: [:id, :title, :public_day, :article_type, :numerical_symbol,
-            :effect_day, :effect_status]
+            :effect_day, :effect_status], limit: 100000
     end
     return @articles
   end
