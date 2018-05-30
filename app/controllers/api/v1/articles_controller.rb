@@ -1,6 +1,8 @@
 class Api::V1::ArticlesController < ApplicationController
   before_action :get_article, only: [:show]
 
+  set caches_page :show
+
   def show
     if @article
       render json: {
