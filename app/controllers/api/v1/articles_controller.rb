@@ -1,8 +1,6 @@
 class Api::V1::ArticlesController < ApplicationController
   before_action :get_article, only: [:show]
 
-  set caches_page :show
-
   def show
     if @article
       render json: {
@@ -107,6 +105,8 @@ class Api::V1::ArticlesController < ApplicationController
         insert_html_law_modify
       end
 
+      @full_html.sub! "Times New Roman", "Montserrat"
+      @full_html.sub! "arial", "Montserrat"
       @article.update_attribute(:full_html, @full_html)
       @article.update_attribute(:index_html, @index_html)
     end
