@@ -54,8 +54,8 @@ class Api::V1::ArticlesController < ApplicationController
   def render_index_html
     if @article.content.length > 0 &&
         (@article.index_html == nil || @article.index_html.length == 0)
-      @index_html = ''
-      @full_html =''
+      @index_html = ' '
+      @full_html = ''
       remove_redundant_element
       replace_search_link
       @parts = @article.parts.order(part_index: :asc)
