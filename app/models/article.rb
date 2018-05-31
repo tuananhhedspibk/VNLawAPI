@@ -49,18 +49,18 @@ class Article < ApplicationRecord
           title: {
             type: "text",
             index: true,
-            boost: 8,
+            boost: 2,
             analyzer: "vnanalysis"
           },
           content: {
             type: "text",
             index: true,
-            boost: 2,
+            boost: 3,
             analyzer: "vnanalysis"
           },
           numerical_symbol: {
             type: "text",
-            boost: 10,
+            boost: 4,
             index: true
           },
           id: {
