@@ -222,13 +222,8 @@ class Api::V1::ArticlesController < ApplicationController
   end
 
   def firstStrip(string)
-    find = /^(\n|\s)+/.match(string)
-
-    if find != nil
-      string = string[find.end(0),string.length]
-    end
-
-    find = /\n/.match(string)
+    string.strip!
+    find = /\n/m.match(string)
 
     if find != nil
       string = string[0,find.begin(0)]
