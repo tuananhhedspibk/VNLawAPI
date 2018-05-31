@@ -26,7 +26,7 @@ class Article < ApplicationRecord
   end
 
   searchkick  callbacks: false,
-    index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued, :public_day],
+    index_name: "articles",batch_size: 1, merge_mappings: true, filterable: [:article_type, :agency_issued],
     settings: {
       index: {
         analysis: {
