@@ -41,8 +41,8 @@ class Api::V1::CheckdepositController < Api::V1::ApplicationController
         dep.ammount = (params[:vpc_Amount].to_i) / 100
         dep.save
         current_balance = current_user.money_account.ammount
-        current_user.money_account.update_attributes
-          ammount: current_balance + params[:vpc_Amount].to_i / 100
+        current_user.money_account.update_attributes ammount:
+          current_balance + params[:vpc_Amount].to_i / 100
       end
       render json: {
         true: (trueData && trueSecretKey && trueAmount && notDone),
